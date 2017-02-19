@@ -10,13 +10,16 @@ GameState Game::currentState{ GameState::Licence };
 Game::Game(sf::Font & font) : 
 	m_window(sf::VideoMode(Game::screenWidth, Game::screenHeight),"Pete's Sokoban"),
 	m_font(font),
-	m_licence(font)
+	m_licence(font),
+	m_splash(font),
+	m_mainMenu(font)
 
 {
 	m_status.setFont(font);
 	m_status.setCharacterSize(24);
 	m_status.setColor(sf::Color::White);
 	m_status.setPosition(100.0f, 300.0f);
+	
 	
 }
 
@@ -59,7 +62,7 @@ void Game::processEvents()
 		case GameState::Licence:
 			break;
 		case GameState::Splash:
-		
+			m_splash.processEvents(event);
 			break;
 		case GameState::MainMenu:
 			break;
@@ -85,6 +88,7 @@ void Game::update(sf::Time deltaTime)
 		m_licence.update(deltaTime);
 		break;
 	case GameState::Splash:
+		m_splash.update(deltaTime);
 		break;
 	case GameState::MainMenu:
 		break;
@@ -111,16 +115,10 @@ void Game::render()
 		m_licence.render(m_window);
 		break;
 	case GameState::Splash:
-		m_window.clear(sf::Color::Red);
-		m_status.setString("Game State Splash");
-		m_window.draw(m_status);
-		m_window.display();
+		m_splash.render(m_window);
 		break;
 	case GameState::MainMenu:
-		m_window.clear(sf::Color::Red);
-		m_status.setString("Game State Main Menu");
-		m_window.draw(m_status);
-		m_window.display();
+		m_mainMenu.render(m_window);
 		break;
 	case GameState::Help:
 		m_window.clear(sf::Color::Red);

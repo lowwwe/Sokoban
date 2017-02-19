@@ -3,6 +3,9 @@
 
 #include <SFML\Graphics.hpp>
 #include "Licence.h"
+#include "Splash.h"
+#include "TextureManager.h"
+#include "MainMenu.h"
 
 enum class
 	GameState
@@ -32,7 +35,12 @@ private:
 	void update(sf::Time deltaTime);
 	void render();
 
+	
 	Licence m_licence;
+	Splash m_splash;
+	MainMenu m_mainMenu;
+	
+
 
 	sf::RenderWindow m_window;
 	sf::Font m_font; // used everywhere
