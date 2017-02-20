@@ -54,10 +54,7 @@ void Splash::render(sf::RenderWindow & window)
 void Splash::processEvents(sf::Event & event)
 {
 	if (sf::Event::KeyPressed == event.type)
-	{
-		if (sf::Keyboard::Space == event.key.code )
-		{
-			m_keypressed = true;
-		}
+	{	
+			m_keypressed = true;	
 	}
 }
