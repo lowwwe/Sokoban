@@ -46,7 +46,7 @@ void MainMenu::update(sf::Time deltaTime)
 
 void MainMenu::render(sf::RenderWindow & window)
 {
-	window.clear(sf::Color::White);
+	window.clear(sf::Color{10,30,136,255});
 	window.draw(m_buttons, &TextureManager::texture);
 	for (size_t i = 0; i < 4; i++)
 	{
