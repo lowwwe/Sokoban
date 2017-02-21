@@ -140,10 +140,7 @@ void Game::render()
 		m_window.display();
 		break;
 	case GameState::Game:
-		m_window.clear(sf::Color::Red);
-		m_status.setString("Game State Game");
-		m_window.draw(m_status);
-		m_window.display();
+		m_gamePlay.render(m_window);
 		break;
 	case GameState::Credits:
 		m_window.clear(sf::Color::Red);

@@ -6,8 +6,10 @@
 
 
 GamePlay::GamePlay(sf::Font & font):
-	m_font{ font }
+	m_font{ font },
+	m_base{sf::Triangles}
 {
+	m_textureCoOrds = TextureManager::getRect("tiles");
 	setupLevel();
 }
 
@@ -22,6 +24,9 @@ void GamePlay::update(sf::Time deltaTime)
 
 void GamePlay::render(sf::RenderWindow & window)
 {
+	window.clear(sf::Color::Black);
+	window.draw(m_base, &TextureManager::texture);
+	window.display();
 }
 
 void GamePlay::processEvents(sf::Event & event)
@@ -56,6 +61,7 @@ void GamePlay::loadFile()
 
 void GamePlay::setupVertexes()
 {
+	sf::Vector2f offset{ m_textureCoOrds.left, m_textureCoOrds.top };
 	for (int row = 0; row < TILES_HIGH; row++)
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
@@ -67,11 +73,15 @@ void GamePlay::setupVertexes()
 				{
 				case 0:
 					vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE} + TOP_LEFT;
-					vertex.texCoords = sf::Vector2f{};
+					vertex.texCoords = sf::Vector2f{(m_baseLevel[row][col]/4)*TILE_SIZE,(m_baseLevel[row][col] % 4)*TILE_SIZE } +offset;
 					break;
 				case 1:
+					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
+					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] / 4)*TILE_SIZE + +TILE_SIZE,(m_baseLevel[row][col] % 4)*TILE_SIZE } +offset;
 					break;
 				case 2:
+					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
+					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] / 4)*TILE_SIZE + +TILE_SIZE,(m_baseLevel[row][col] % 4)*TILE_SIZE + TILE_SIZE } +offset;
 					break;
 				case 3:
 					break;
