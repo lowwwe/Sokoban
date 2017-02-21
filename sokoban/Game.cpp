@@ -12,8 +12,8 @@ Game::Game(sf::Font & font) :
 	m_font(font),
 	m_licence(font),
 	m_splash(font),
-	m_mainMenu(font)
-
+	m_mainMenu(font),
+	m_gamePlay(font)
 {
 	m_status.setFont(font);
 	m_status.setCharacterSize(24);

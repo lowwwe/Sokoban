@@ -62,7 +62,7 @@ void MainMenu::processEvents(sf::Event & event)
 		
 		for (size_t i = 0; i < MAXBUTTONS; i++)
 		{
-			float left = Game::screenWidth, top = Game::screenHeight, right = 0, bottom = 0;
+			float left = static_cast<float>(Game::screenWidth), top = static_cast<float>(Game::screenHeight), right = 0.0f, bottom = 0.0f;
 			for (size_t j = 0; j < 6; j++)
 			{
 				if (m_buttons[i * 6 + j].position.x < left)

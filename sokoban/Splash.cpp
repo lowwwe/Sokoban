@@ -1,5 +1,6 @@
 #include "Splash.h"
 #include "Game.h"
+#include "TextureManager.h"
 #include <iostream>
 
 

@@ -4,7 +4,7 @@
 #include <SFML\Graphics.hpp>
 #include "Licence.h"
 #include "Splash.h"
-#include "TextureManager.h"
+#include "GamePlay.h"
 #include "MainMenu.h"
 
 enum class
@@ -41,7 +41,7 @@ private:
 	Licence m_licence;
 	Splash m_splash;
 	MainMenu m_mainMenu;
-	
+	GamePlay m_gamePlay;
 
 
 	sf::RenderWindow m_window;

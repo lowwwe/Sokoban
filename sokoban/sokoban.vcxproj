@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GamePlay.cpp" />
     <ClCompile Include="Licence.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
@@ -28,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GamePlay.h" />
     <ClInclude Include="Licence.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MainMenu.h" />
