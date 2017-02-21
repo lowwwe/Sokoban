@@ -23,6 +23,7 @@ private:
 	void setupVertexes();
 	sf::VertexArray m_base;
 	sf::Font m_font;
+	sf::FloatRect m_textureCoOrds;
 	
 	
 
