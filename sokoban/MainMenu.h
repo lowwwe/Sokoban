@@ -3,6 +3,8 @@
 
 #include <SFML\Graphics.hpp>
 
+
+#define MAXBUTTONS 4
 class MainMenu
 {
 public:
@@ -17,8 +19,9 @@ private:
 	void addButton(sf::Text & Text, sf::Vector2f & position, sf::FloatRect & coOrds);
 	sf::VertexArray m_buttons;
 	sf::Font m_font;
-	sf::Text m_texts[4];
+	sf::Text m_texts[MAXBUTTONS];
 	sf::Text button1;
+	int m_buttonSelected; // used to determine whihc button was pressed
 };
 
 #endif // !MANIMENU

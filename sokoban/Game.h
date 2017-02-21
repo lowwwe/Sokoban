@@ -15,7 +15,9 @@ enum class
 	Splash,
 	MainMenu,
 	Help,
-	Game
+	Game,
+	Exit,
+	Credits
 };
 
 class Game

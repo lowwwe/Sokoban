@@ -1,2 +1,4 @@
+button = 0 601 600 139
+splash = 0 0 600 600
 button = 0 0 418 128
 splash = 0 129 200 200

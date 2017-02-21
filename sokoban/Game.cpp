@@ -65,12 +65,19 @@ void Game::processEvents()
 			m_splash.processEvents(event);
 			break;
 		case GameState::MainMenu:
+			m_mainMenu.processEvents(event);
 			break;
 		case GameState::Help:
 		
 			break;
 		case GameState::Game:
 		
+			break;
+		case GameState::Credits:
+
+			break;
+		case GameState::Exit:
+			m_window.close();
 			break;
 		default:
 			break;
@@ -91,10 +98,16 @@ void Game::update(sf::Time deltaTime)
 		m_splash.update(deltaTime);
 		break;
 	case GameState::MainMenu:
+		m_mainMenu.update(deltaTime);
 		break;
 	case GameState::Help:
 		break;
 	case GameState::Game:
+		break;
+	case GameState::Credits:
+		break;
+	case GameState::Exit:
+
 		break;
 	default:
 		break;
@@ -129,6 +142,18 @@ void Game::render()
 	case GameState::Game:
 		m_window.clear(sf::Color::Red);
 		m_status.setString("Game State Game");
+		m_window.draw(m_status);
+		m_window.display();
+		break;
+	case GameState::Credits:
+		m_window.clear(sf::Color::Red);
+		m_status.setString("Game State Credits");
+		m_window.draw(m_status);
+		m_window.display();
+		break;
+	case GameState::Exit:
+		m_window.clear(sf::Color::Red);
+		m_status.setString("Game State Exit");
 		m_window.draw(m_status);
 		m_window.display();
 		break;
