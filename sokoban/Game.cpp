@@ -103,6 +103,7 @@ void Game::update(sf::Time deltaTime)
 	case GameState::Help:
 		break;
 	case GameState::Game:
+		m_gamePlay.update(deltaTime);
 		break;
 	case GameState::Credits:
 		break;

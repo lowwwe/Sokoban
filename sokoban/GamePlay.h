@@ -2,12 +2,16 @@
 #define GAMEPLAY
 
 #include "TextureManager.h"
+#include "Penguin.h"
 
 #define TILES_WIDE 16
 #define TILES_HIGH 16
-const float TILE_SIZE{ 32.0f };
+#define GRIDSIZE 5
+#define MAX_PENGUINS 1
 
-const sf::Vector2f TOP_LEFT{ 32.0f,32.0f };
+
+
+const sf::Vector2f TOP_LEFT{ 16.0f,16.0f };
 
 class GamePlay
 {
@@ -19,15 +23,20 @@ public:
 	void processEvents(sf::Event & event);
 private:
 	void setupLevel();
-	void loadFile();
-	void setupVertexes();
+	void loadBaseFile();
+	void setupBaseVertexes();
+	void loadItemsFile();
+	void setupItemsVertexes();
+	void addPenguinVertexes();
+	
 	sf::VertexArray m_base;
 	sf::Font m_font;
 	sf::FloatRect m_textureCoOrds;
-	
-	
+	Penguin m_penguins[MAX_PENGUINS];
+	sf::VertexArray m_penguinVertexes;
 
 	int m_baseLevel[TILES_WIDE][TILES_HIGH];
+	int m_itemsLevel[TILES_WIDE][TILES_HIGH];
 };
 
 #endif // !GAMEPLAY

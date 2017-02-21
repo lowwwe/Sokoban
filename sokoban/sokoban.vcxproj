@@ -24,6 +24,7 @@
     <ClCompile Include="Licence.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="Penguin.cpp" />
     <ClCompile Include="Splash.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
@@ -33,8 +34,14 @@
     <ClInclude Include="Licence.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Penguin.h" />
     <ClInclude Include="Splash.h" />
     <ClInclude Include="TextureManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="assets\images\atlas.txt" />
+    <Text Include="assets\images\items1.txt" />
+    <Text Include="assets\images\level1.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{dea870b2-8c3f-42bf-8dba-6146db9321e5}</ProjectGuid>
