@@ -4,7 +4,7 @@
 
 #include <SFML\Graphics.hpp>
 
-#define MAXPENGUIN 1
+#define MAXPENGUIN 5
 #define FRAMES 3
 #define NO_STEPS 50
 
@@ -31,6 +31,7 @@ public:
 	bool m_ready;
 	sf::Vector2i m_square;
 	Direction m_facing;
+	void position();
 private:
 	sf::Vector2f m_position;
 	int m_animationFrame;

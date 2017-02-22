@@ -8,18 +8,20 @@ Penguin::Penguin() :
 	m_animationFrame{ 1 },
 	m_perFrame{ sf::microseconds(100000) },
 	m_intraFrameDelay{ sf::seconds(0) },
-	m_position{ 144,112 },
+	m_position{ },
 	m_facing{ Direction::Down },
 	m_stepstaken{ 0 },
-	m_square{1,1}
+	m_square{ 0,0 }
 {
 	sf::FloatRect textureCoOrds = TextureManager::getRect("penguin");
 	m_texOffset = sf::Vector2f{ textureCoOrds.left, textureCoOrds.top };
 	updateVertexes();
 	updateTexCoords();
+	
 	m_velocity = sf::Vector2f(0.0f, m_step);
-	m_position.x = 16 + m_square.x * TILE_SIZE;
-	m_position.y = 16 + m_square.y * TILE_SIZE;
+	//m_position.x = 16 + m_square.y * TILE_SIZE;
+	//m_position.y = 16 + m_square.x * TILE_SIZE;
+	updateVertexes();
 }
 
 
@@ -36,17 +38,19 @@ bool Penguin::move(Direction direction)
 	{
 	case Direction::Down:
 		m_velocity = sf::Vector2f(0.0f, m_step);
-		m_square.x++;
-		m_position.x = 16 + m_square.x * TILE_SIZE;
+		m_square.x++;	
 		break;
 	case Direction::Left:
 		m_velocity = sf::Vector2f(-m_step, 0.0f);
+		m_square.y--;
 		break;
 	case Direction::Right:
 		m_velocity = sf::Vector2f( m_step, 0.0f);
+		m_square.y++;
 		break;
 	case Direction::Up:
 		m_velocity = sf::Vector2f(0.0f, -m_step);
+		m_square.x--;
 		break;
 	default:
 		break;
@@ -75,6 +79,12 @@ void Penguin::update(sf::Time deltaTime)
 			m_ready = true;
 		}
 	}
+}
+
+void Penguin::position()
+{
+	m_position.x = 16 + m_square.y * TILE_SIZE;
+	m_position.y = 16 + m_square.x * TILE_SIZE;
 }
 
 void Penguin::updateVertexes()

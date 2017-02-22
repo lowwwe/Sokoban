@@ -7,7 +7,7 @@
 #define TILES_WIDE 16
 #define TILES_HIGH 16
 #define GRIDSIZE 5
-#define MAX_PENGUINS 1
+#define MAX_PENGUINS 5
 
 
 
@@ -28,6 +28,8 @@ private:
 	void loadItemsFile();
 	void setupItemsVertexes();
 	void addPenguinVertexes();
+	void setupNavigation();
+	Direction newDirection(Direction default);
 	
 	sf::VertexArray m_base;
 	sf::Font m_font;
@@ -37,6 +39,7 @@ private:
 
 	int m_baseLevel[TILES_WIDE][TILES_HIGH];
 	int m_itemsLevel[TILES_WIDE][TILES_HIGH];
+	bool m_navigation[TILES_WIDE][TILES_HIGH];
 };
 
 #endif // !GAMEPLAY
