@@ -7,7 +7,7 @@
 int main()
 {
 	sf::Font font;
-	if (!font.loadFromFile("ASSETS\\FONTS\\Android.ttf"))
+	if (!font.loadFromFile("ASSETS\\FONTS\\Hunger Games.ttf"))
 	{
 		std::cout << "Problem with font" << std::endl;
 	}

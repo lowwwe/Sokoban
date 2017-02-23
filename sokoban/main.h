@@ -8,6 +8,7 @@
 #pragma comment(lib,"sfml-window-d.lib") 
 #pragma comment(lib,"sfml-main-d.lib")
 #pragma comment(lib,"sfml-network-d.lib") 
+
 #else 
 #pragma comment(lib,"sfml-graphics.lib") 
 #pragma comment(lib,"sfml-audio.lib") 

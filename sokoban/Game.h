@@ -43,6 +43,11 @@ private:
 	MainMenu m_mainMenu;
 	GamePlay m_gamePlay;
 
+	sf::Text updateFps;
+	sf::Text drawFps;
+	int updateFrameCount;
+	int drawFrameCount;
+	sf::Time secondTime;
 
 	sf::RenderWindow m_window;
 	sf::Font m_font; // used everywhere

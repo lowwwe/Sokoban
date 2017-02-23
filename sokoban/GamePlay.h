@@ -31,7 +31,9 @@ private:
 	void setupNavigation();
 	Direction newDirection(Direction default);
 	
-	sf::VertexArray m_base;
+	sf::RenderTexture m_newTexture;
+	sf::VertexArray m_background;
+	sf::VertexArray m_foreground;
 	sf::Font m_font;
 	sf::FloatRect m_textureCoOrds;
 	Penguin m_penguins[MAX_PENGUINS];

@@ -52,7 +52,7 @@ void MainMenu::render(sf::RenderWindow & window)
 	{
 		window.draw(m_texts[i]);
 	}	
-	window.display();
+	
 }
 
 void MainMenu::processEvents(sf::Event & event)

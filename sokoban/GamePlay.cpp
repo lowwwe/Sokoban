@@ -7,7 +7,8 @@
 
 GamePlay::GamePlay(sf::Font & font):
 	m_font{ font },
-	m_base{sf::Triangles},
+	m_background{sf::Triangles},
+	m_foreground{sf::Triangles},
 	m_penguinVertexes{sf::Triangles},
 	m_penguins{ {} }
 
@@ -95,9 +96,10 @@ void GamePlay::update(sf::Time deltaTime)
 void GamePlay::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color::Black);
-	window.draw(m_base, &TextureManager::texture);
-	window.draw(m_penguinVertexes, &TextureManager::texture);
-	window.display();
+	window.draw(m_background, &m_newTexture.getTexture());
+	window.draw(m_penguinVertexes, &m_newTexture.getTexture());
+	window.draw(m_foreground, &m_newTexture.getTexture());
+	
 }
 
 void GamePlay::processEvents(sf::Event & event)
@@ -106,9 +108,31 @@ void GamePlay::processEvents(sf::Event & event)
 
 void GamePlay::setupLevel()
 {
-	
+	float width = TextureManager::texture.getSize().x;
+	float height = TextureManager::texture.getSize().y;
+	m_background.append({{0,0},{0,0} });
+	m_background.append({ { 0,width },{ 0,width } });
+	m_background.append({ { height,width },{ height,width } });
+
+	m_background.append({ { 0,0 },{ 0,0 } });
+	m_background.append({ { height,width },{ height,width } });
+	m_background.append({ { height,0 },{ height,0 } });
+
 	loadBaseFile();	
 	setupBaseVertexes();
+	m_newTexture.create(width, height);
+	m_newTexture.draw(m_background, &TextureManager::texture);
+	m_newTexture.display();
+	m_background.clear();
+
+	m_background.append({ { 16,16 },{ 16,16 } });
+	m_background.append({ { 16,528 },{ 16,528 } });
+	m_background.append({ { 528,528 },{ 528,528 } });
+
+	m_background.append({ { 16,16 },{ 16,16 } });
+	m_background.append({ { 528,528 },{ 528,528 } });
+	m_background.append({ { 528,16 },{ 528,16 } });
+
 	loadItemsFile();
 	setupItemsVertexes();
 	setupNavigation();
@@ -154,8 +178,10 @@ void GamePlay::setupNavigation()
 			{
 			case 2:
 			case 3:
-			case 13:
+			case 11:
 			case 18:
+			case 20:
+			case 21:
 				m_navigation[row][col] = false;
 				break;
 			}
@@ -221,7 +247,7 @@ void GamePlay::setupBaseVertexes()
 					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_baseLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 					break;
 				}
-				m_base.append(vertex);
+				m_background.append(vertex);
 			}
 		}
 	}
@@ -253,31 +279,34 @@ void GamePlay::setupItemsVertexes()
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			for (int i = 0; i < 6; i++)
+			if (m_itemsLevel[row][col] != 0)
 			{
-				sf::Vertex vertex;
-				switch (i)
+				for (int i = 0; i < 6; i++)
 				{
-				case 0:
-				case 3:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE} + TOP_LEFT;
-					vertex.texCoords = sf::Vector2f{(m_itemsLevel[row][col]% GRIDSIZE)*TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
-					break;
-				case 1:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
-					vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE  + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
-					break;
-				case 2:
-				case 4:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
-					vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE  +TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
-					break;
-				case 5:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
-					vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
-					break;
-				}				
-				m_base.append(vertex);
+					sf::Vertex vertex;
+					switch (i)
+					{
+					case 0:
+					case 3:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						break;
+					case 1:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						break;
+					case 2:
+					case 4:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						break;
+					case 5:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						break;
+					}
+					m_foreground.append(vertex);
+				}
 			}
 		}
 	}

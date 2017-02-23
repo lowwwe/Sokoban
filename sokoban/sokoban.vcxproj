@@ -25,6 +25,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Penguin.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Splash.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
@@ -35,6 +36,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Penguin.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Splash.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>

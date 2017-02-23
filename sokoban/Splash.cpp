@@ -48,8 +48,7 @@ void Splash::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color::White);
 	window.draw(m_background, &TextureManager::texture);
-	window.draw(m_promptText);
-	window.display();
+	window.draw(m_promptText);	
 }
 
 void Splash::processEvents(sf::Event & event)

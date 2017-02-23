@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <SFML\Graphics.hpp>
 
+#define TEST_FPS
 
 int Game::screenWidth{ 600 }; 
 int Game::screenHeight{ 600 };
@@ -20,7 +21,19 @@ Game::Game(sf::Font & font) :
 	m_status.setColor(sf::Color::White);
 	m_status.setPosition(100.0f, 300.0f);
 	
-	
+#ifdef TEST_FPS
+	updateFrameCount = 0;
+	drawFrameCount = 0;
+	secondTime = sf::Time::Zero;
+	updateFps.setFont(m_font);
+	updateFps.setPosition(20, 530);
+	updateFps.setCharacterSize(24);
+	updateFps.setColor(sf::Color::White);
+	drawFps.setFont(m_font);
+	drawFps.setPosition(20, 560);
+	drawFps.setCharacterSize(24);
+	drawFps.setColor(sf::Color::White);
+#endif // TEST_FPS
 }
 
 
@@ -43,8 +56,27 @@ void Game::run()
 
 			processEvents();
 			update(timePerFrame);
+#ifdef TEST_FPS
+			secondTime += timePerFrame;
+			updateFrameCount++;
+			if (secondTime.asSeconds() > 1)
+			{
+				char bufferDps[256];
+				char bufferUps[256];
+				sprintf_s(bufferUps, "%d UPS", updateFrameCount - 1);
+				updateFps.setString(bufferUps);
+				sprintf_s(bufferDps, "%d DPS", drawFrameCount);
+				drawFps.setString(bufferDps);
+				updateFrameCount = 0;
+				drawFrameCount = 0;
+				secondTime = sf::Time::Zero;
+			}
+#endif // TEST_FPS
 		}
 		render();
+#ifdef TEST_FPS
+		drawFrameCount++;
+#endif // TEST_FPS
 	}
 }
 
@@ -123,7 +155,7 @@ void Game::render()
 		m_window.clear(sf::Color::Red);
 		m_status.setString("Game State None");
 		m_window.draw(m_status);
-		m_window.display();
+		
 		break;
 	case GameState::Licence:
 		m_licence.render(m_window);
@@ -138,7 +170,7 @@ void Game::render()
 		m_window.clear(sf::Color::Red);
 		m_status.setString("Game State Help");
 		m_window.draw(m_status);
-		m_window.display();
+		
 		break;
 	case GameState::Game:
 		m_gamePlay.render(m_window);
@@ -147,16 +179,20 @@ void Game::render()
 		m_window.clear(sf::Color::Red);
 		m_status.setString("Game State Credits");
 		m_window.draw(m_status);
-		m_window.display();
+		
 		break;
 	case GameState::Exit:
 		m_window.clear(sf::Color::Red);
 		m_status.setString("Game State Exit");
 		m_window.draw(m_status);
-		m_window.display();
+		
 		break;
 	default:
 		break;
 	}
-
+#ifdef TEST_FPS
+	m_window.draw(updateFps);
+	m_window.draw(drawFps);
+#endif // TEST_FPS
+	m_window.display();
 }

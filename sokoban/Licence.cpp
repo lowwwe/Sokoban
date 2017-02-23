@@ -34,5 +34,5 @@ void Licence::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color::Black);
 	window.draw(m_licenceText);
-	window.display();
+	
 }
