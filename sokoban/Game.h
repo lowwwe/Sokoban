@@ -6,19 +6,8 @@
 #include "Splash.h"
 #include "GamePlay.h"
 #include "MainMenu.h"
+#include "Enums.h"
 
-enum class
-	GameState
-{
-	None,
-	Licence,
-	Splash,
-	MainMenu,
-	Help,
-	Game,
-	Exit,
-	Credits
-};
 
 class Game
 {

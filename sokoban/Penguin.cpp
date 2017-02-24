@@ -1,17 +1,20 @@
 #include "Penguin.h"
 #include "TextureManager.h"
-
+#include "Colours.h"
 
 
 Penguin::Penguin() :
 	m_vertexes{ sf::Triangles,6 },
+	m_footSteps{ sf::Triangles,MAX_FOOT_STEPS_6 },
 	m_animationFrame{ 1 },
 	m_perFrame{ sf::microseconds(100000) },
 	m_intraFrameDelay{ sf::seconds(0) },
-	m_position{ },
+	m_position{},
 	m_facing{ Direction::Down },
 	m_stepstaken{ 0 },
-	m_square{ 0,0 }
+	m_square{ 0,0 },
+	m_leftFoot{ false }
+
 {
 	sf::FloatRect textureCoOrds = TextureManager::getRect("penguin");
 	m_texOffset = sf::Vector2f{ textureCoOrds.left, textureCoOrds.top };
@@ -22,6 +25,10 @@ Penguin::Penguin() :
 	//m_position.x = 16 + m_square.y * TILE_SIZE;
 	//m_position.y = 16 + m_square.x * TILE_SIZE;
 	updateVertexes();
+	for (int i = 0; i < MAX_FOOT_STEPS_6; i++)
+	{
+		m_footSteps[i].color = FADE;
+	}
 }
 
 
@@ -70,6 +77,10 @@ void Penguin::update(sf::Time deltaTime)
 			m_intraFrameDelay -= m_perFrame;
 			m_animationFrame = ++m_animationFrame % FRAMES;
 			updateTexCoords();
+			if (m_animationFrame == 0)
+			{
+				addFootStep();
+			}
 		}
 
 		m_position += m_velocity;
@@ -106,6 +117,69 @@ void Penguin::updateTexCoords()
 	m_vertexes[3].texCoords = m_texOffset + sf::Vector2f{ TILE_SIZE * m_animationFrame, static_cast<int>(m_facing) * TILE_SIZE };
 	m_vertexes[4].texCoords = m_texOffset + sf::Vector2f{ TILE_SIZE * m_animationFrame + TILE_SIZE, static_cast<int>(m_facing) * TILE_SIZE + TILE_SIZE };
 	m_vertexes[5].texCoords = m_texOffset + sf::Vector2f{ TILE_SIZE * m_animationFrame , static_cast<int>(m_facing) * TILE_SIZE + TILE_SIZE };
+}
+
+void Penguin::addFootStep()
+{
+	bool found{ false };
+	sf::Vector2f width{};
+	sf::Vector2f height{};
+	sf::Vector2f footPosition;
+	int i{ 0 };
+	while (i< MAX_FOOT_STEPS_6)
+	{
+		if (!found  && m_footSteps[i].color.a < 21) // fading by 10
+		{
+			if (m_facing == Direction::Up || m_facing == Direction::Down)
+			{
+				width.x = 4.0f;
+				height.y = 8.0f;
+				if (m_leftFoot)
+				{
+					footPosition = m_position + sf::Vector2f(10, 23);
+				}
+				else
+				{
+					footPosition = m_position + sf::Vector2f(16, 23);
+				}				
+			}
+			else
+			{
+				width.x = 8.0f;
+				height.y = 4.0f;
+				if (m_leftFoot)
+				{
+					footPosition = m_position + sf::Vector2f(11, 30);
+				}
+				else
+				{
+					footPosition = m_position + sf::Vector2f(11, 25);
+				}				
+			}
+			m_leftFoot = !m_leftFoot;
+			found = true;
+			m_footSteps[i].position = footPosition;
+			m_footSteps[i].color = FOOT_TOP;
+			m_footSteps[i+1].position = footPosition +width;
+			m_footSteps[i+1].color = FOOT_TOP;
+			m_footSteps[i+2].position = footPosition + width + height;
+			m_footSteps[i+2].color = FOOT_BOTTOM;
+			m_footSteps[i+3].position = footPosition;
+			m_footSteps[i+3].color = FOOT_TOP;		
+			m_footSteps[i+4].position = footPosition + width + height;
+			m_footSteps[i+4].color = FOOT_BOTTOM;
+			m_footSteps[i+5].position = footPosition + height;
+			m_footSteps[i+5].color = FOOT_BOTTOM;
+		}
+		else
+		{
+			for (size_t j = 0; j < 6; j++)
+			{
+				m_footSteps[i+j].color -= FADE;
+			}
+		}
+		i += 6;
+	}
 }
 
 

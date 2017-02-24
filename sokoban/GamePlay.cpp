@@ -96,7 +96,11 @@ void GamePlay::update(sf::Time deltaTime)
 void GamePlay::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color::Black);
-	window.draw(m_background, &m_newTexture.getTexture());
+	window.draw(m_background, &m_newTexture.getTexture());	
+	for (int i = 0; i < MAXPENGUIN; i++)
+	{
+		window.draw(m_penguins[i].m_footSteps);
+	}	
 	window.draw(m_penguinVertexes, &m_newTexture.getTexture());
 	window.draw(m_foreground, &m_newTexture.getTexture());
 	
@@ -108,31 +112,8 @@ void GamePlay::processEvents(sf::Event & event)
 
 void GamePlay::setupLevel()
 {
-	float width = TextureManager::texture.getSize().x;
-	float height = TextureManager::texture.getSize().y;
-	m_background.append({{0,0},{0,0} });
-	m_background.append({ { 0,width },{ 0,width } });
-	m_background.append({ { height,width },{ height,width } });
-
-	m_background.append({ { 0,0 },{ 0,0 } });
-	m_background.append({ { height,width },{ height,width } });
-	m_background.append({ { height,0 },{ height,0 } });
-
-	loadBaseFile();	
-	setupBaseVertexes();
-	m_newTexture.create(width, height);
-	m_newTexture.draw(m_background, &TextureManager::texture);
-	m_newTexture.display();
-	m_background.clear();
-
-	m_background.append({ { 16,16 },{ 16,16 } });
-	m_background.append({ { 16,528 },{ 16,528 } });
-	m_background.append({ { 528,528 },{ 528,528 } });
-
-	m_background.append({ { 16,16 },{ 16,16 } });
-	m_background.append({ { 528,528 },{ 528,528 } });
-	m_background.append({ { 528,16 },{ 528,16 } });
-
+	
+	setupTexture();
 	loadItemsFile();
 	setupItemsVertexes();
 	setupNavigation();
@@ -188,6 +169,36 @@ void GamePlay::setupNavigation()
 		}
 	}
 }
+void GamePlay::setupTexture()
+{
+	sf::FloatRect offset = TextureManager::getRect("splash");
+	float top = offset.top;
+	float left = offset.left;
+	float width = static_cast<float>(TextureManager::texture.getSize().x);
+	float height = static_cast<float>(TextureManager::texture.getSize().y);
+	m_background.append({ { 0,0 },{ 0,0 } });
+	m_background.append({ { 0,width },{ 0,width } });
+	m_background.append({ { height,width },{ height,width } });
+
+	m_background.append({ { 0,0 },{ 0,0 } });
+	m_background.append({ { height,width },{ height,width } });
+	m_background.append({ { height,0 },{ height,0 } });
+
+	loadBaseFile();
+	setupBaseVertexes(sf::Vector2f{ left,top });
+	m_newTexture.create(static_cast<int>(width), static_cast<int>(height));
+	m_newTexture.draw(m_background, &TextureManager::texture);
+	m_newTexture.display();
+	m_background.clear();
+
+	m_background.append({ { 16,16 },{ left,top } });
+	m_background.append({ { 16,528 },{ left, top +512 } });
+	m_background.append({ { 528,528 },{ left + 512,top + 512 } });
+
+	m_background.append({ { 16,16 },{ left,top } });
+	m_background.append({ { 528,528 },{ left+512,top + 512 } });
+	m_background.append({ { 528,16 },{ left + 512, top } });
+}
 Direction GamePlay::newDirection(Direction default)
 {
 	int choice{ std::rand() % 6 };
@@ -216,7 +227,7 @@ void GamePlay::loadBaseFile()
 	infile.close();
 }
 
-void GamePlay::setupBaseVertexes()
+void GamePlay::setupBaseVertexes(sf::Vector2f targetOffset)
 {
 	sf::Vector2f offset{ m_textureCoOrds.left, m_textureCoOrds.top };
 	for (int row = 0; row < TILES_HIGH; row++)
@@ -230,20 +241,20 @@ void GamePlay::setupBaseVertexes()
 				{
 				case 0:
 				case 3:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
+					vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE }+targetOffset;
 					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] % GRIDSIZE)*TILE_SIZE,(m_baseLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
 					break;
 				case 1:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
+					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE }+targetOffset;
 					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_baseLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
 					break;
 				case 2:
 				case 4:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
+					vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE }+targetOffset;
 					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_baseLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 					break;
 				case 5:
-					vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
+					vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE }+targetOffset;
 					vertex.texCoords = sf::Vector2f{ (m_baseLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_baseLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 					break;
 				}

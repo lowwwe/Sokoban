@@ -1,23 +1,19 @@
 #ifndef PENGUIN
 #define PENGUIN
 
-
+#include "Enums.h"
 #include <SFML\Graphics.hpp>
 
-#define MAXPENGUIN 5
-#define FRAMES 3
-#define NO_STEPS 50
+const int MAXPENGUIN = 5;
+const int FRAMES = 3;
+const int NO_STEPS = 50;
+const int MAX_FOOT_STEPS_6 = 132;
 
 const float TILE_SIZE{ 32.0f };
 
-enum class
-	Direction
-{
-	Down =0,
-	Left =1,
-	Right =2,
-	Up = 3
-};
+
+
+
 
 class Penguin
 {
@@ -27,6 +23,7 @@ public:
 	bool move(Direction direction);
 	void update(sf::Time deltaTime);
 	sf::VertexArray m_vertexes;	
+	sf::VertexArray m_footSteps;
 	bool m_alive;
 	bool m_ready;
 	sf::Vector2i m_square;
@@ -43,7 +40,8 @@ private:
 	float m_step = 32.0f / NO_STEPS;
 	sf::Vector2f m_texOffset;
 	int m_stepstaken;
-	
+	void addFootStep();
+	bool m_leftFoot; // used to alternate foot prints
 };
 
 #endif // !PENGUIN

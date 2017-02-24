@@ -24,11 +24,13 @@ public:
 private:
 	void setupLevel();
 	void loadBaseFile();
-	void setupBaseVertexes();
+	void setupBaseVertexes(sf::Vector2f targetOffset);
 	void loadItemsFile();
 	void setupItemsVertexes();
 	void addPenguinVertexes();
 	void setupNavigation();
+	void setupTexture();
+
 	Direction newDirection(Direction default);
 	
 	sf::RenderTexture m_newTexture;
