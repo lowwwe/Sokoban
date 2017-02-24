@@ -13,7 +13,9 @@ Penguin::Penguin() :
 	m_facing{ Direction::Down },
 	m_stepstaken{ 0 },
 	m_square{ 0,0 },
-	m_leftFoot{ false }
+	m_leftFoot{ false },
+	m_drowning{ false },
+	m_drownStep{ 0 }
 
 {
 	sf::FloatRect textureCoOrds = TextureManager::getRect("penguin");
@@ -82,7 +84,7 @@ void Penguin::update(sf::Time deltaTime)
 				addFootStep();
 			}
 		}
-
+		
 		m_position += m_velocity;
 		updateVertexes();
 		if (m_stepstaken == 0)
@@ -90,12 +92,45 @@ void Penguin::update(sf::Time deltaTime)
 			m_ready = true;
 		}
 	}
+	if (m_drowning)
+	{
+		if (--m_drownStep == 0)
+		{
+			m_alive = false;
+		}
+		m_position.y += 1;
+		updateVertexesDrowning();
+	}
 }
 
 void Penguin::position()
 {
 	m_position.x = 16 + m_square.y * TILE_SIZE;
 	m_position.y = 16 + m_square.x * TILE_SIZE;
+}
+
+void Penguin::drown()
+{
+	m_drowning = true;
+	m_drownStep = 26;
+	m_ready = false;
+	m_stepstaken = 0;
+	m_position.y -= 8;
+	m_vertexes[2].texCoords -= sf::Vector2f{ 0.0, 8.0f };
+	m_vertexes[4].texCoords -= sf::Vector2f{ 0.0, 8.0f };
+	m_vertexes[5].texCoords -= sf::Vector2f{ 0.0, 8.0f };
+}
+
+
+void Penguin::updateVertexesDrowning()
+{
+	float height =  static_cast<float>(m_drownStep);
+	m_vertexes[0].position = m_position;
+	m_vertexes[1].position = m_position + sf::Vector2f{ 32.0f, 0.0f };
+	m_vertexes[2].position = m_position + sf::Vector2f{ 32.0f, height };
+	m_vertexes[3].position = m_position;
+	m_vertexes[4].position = m_position + sf::Vector2f{ 32.0f, height };
+	m_vertexes[5].position = m_position + sf::Vector2f{ 0.0f, height };
 }
 
 void Penguin::updateVertexes()
@@ -122,6 +157,7 @@ void Penguin::updateTexCoords()
 void Penguin::addFootStep()
 {
 	bool found{ false };
+	m_noFootSteps = false;
 	sf::Vector2f width{};
 	sf::Vector2f height{};
 	sf::Vector2f footPosition;
@@ -170,15 +206,24 @@ void Penguin::addFootStep()
 			m_footSteps[i+4].color = FOOT_BOTTOM;
 			m_footSteps[i+5].position = footPosition + height;
 			m_footSteps[i+5].color = FOOT_BOTTOM;
-		}
-		else
+		}		
+		i += 6;
+	}
+}
+
+void Penguin::fadeFootSteps()
+{
+	if (!m_noFootSteps)
+	{
+		m_noFootSteps = true;
+		for (size_t j = 0; j < MAX_FOOT_STEPS_6; j++)
 		{
-			for (size_t j = 0; j < 6; j++)
+			if (m_footSteps[j].color.a > 1)
 			{
-				m_footSteps[i+j].color -= FADE;
+				m_footSteps[j].color -= FADE;
+				m_noFootSteps = false;
 			}
 		}
-		i += 6;
 	}
 }
 

@@ -5,6 +5,7 @@
 
 
 
+
 GamePlay::GamePlay(sf::Font & font):
 	m_font{ font },
 	m_background{sf::Triangles},
@@ -24,69 +25,79 @@ GamePlay::~GamePlay()
 
 void GamePlay::update(sf::Time deltaTime)
 {
-	for (size_t i = 0; i < MAXPENGUIN; i++)
+	m_penguinVertexes.clear();
+	for (size_t i = 0; i < MAX_PENGUIN; i++)
 	{
-		m_penguins[i].update(deltaTime);
-		addPenguinVertexes();
-		if (m_penguins[i].m_ready)
+		bool moved{ false };
+		m_penguins[i].fadeFootSteps();
+		if (m_penguins[i].m_alive)
 		{
-			int row = m_penguins[i].m_square.x;
-			int col = m_penguins[i].m_square.y;
-			bool moved{ false };
-			while (!moved)
+			m_penguins[i].update(deltaTime);
+			addPenguinVertexes(i);
+			if (m_penguins[i].m_ready)
 			{
-				switch (m_penguins[i].m_facing)
+				int row = m_penguins[i].m_square.x;
+				int col = m_penguins[i].m_square.y;
+				if (m_itemsLevel[row][col] == ICE_POOL)
 				{
-				case Direction::Down:
-					if (m_navigation[row + 1][col])
+					m_penguins[i].drown();
+					moved = true; // ensure penguin doenst move
+				}				
+				while (!moved)
+				{
+					switch (m_penguins[i].m_facing)
 					{
-						std::cout << "down x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
-						m_penguins[i].move(Direction::Down);
-						moved = true;
+					case Direction::Down:
+						if (m_navigation[row + 1][col])
+						{
+							std::cout << "down x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
+							m_penguins[i].move(Direction::Down);
+							moved = true;
+						}
+						else
+						{
+							m_penguins[i].m_facing = newDirection(Direction::Left);
+						}
+						break;
+					case Direction::Left:
+						if (m_navigation[row][col - 1])
+						{
+							std::cout << "Left x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
+							m_penguins[i].move(Direction::Left);
+							moved = true;
+						}
+						else
+						{
+							m_penguins[i].m_facing = newDirection(Direction::Up);
+						}
+						break;
+					case Direction::Right:
+						if (m_navigation[row][col + 1])
+						{
+							std::cout << "Right x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
+							m_penguins[i].move(Direction::Right);
+							moved = true;
+						}
+						else
+						{
+							m_penguins[i].m_facing = newDirection(Direction::Down);
+						}
+						break;
+					case Direction::Up:
+						if (m_navigation[row - 1][col])
+						{
+							std::cout << "UP x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
+							m_penguins[i].move(Direction::Up);
+							moved = true;
+						}
+						else
+						{
+							m_penguins[i].m_facing = newDirection(Direction::Right);
+						}
+						break;
+					default:
+						break;
 					}
-					else
-					{
-						m_penguins[i].m_facing = newDirection(Direction::Left);
-					}
-					break;
-				case Direction::Left:
-					if (m_navigation[row][col - 1])
-					{
-						std::cout << "Left x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
-						m_penguins[i].move(Direction::Left);
-						moved = true;
-					}
-					else
-					{
-						m_penguins[i].m_facing = newDirection(Direction::Up);
-					}
-					break;
-				case Direction::Right:
-					if (m_navigation[row][col + 1])
-					{
-						std::cout << "Right x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
-						m_penguins[i].move(Direction::Right);
-						moved = true;
-					}
-					else
-					{
-						m_penguins[i].m_facing = newDirection(Direction::Down);
-					}
-					break;
-				case Direction::Up:
-					if (m_navigation[row - 1][col])
-					{
-						std::cout << "UP x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
-						m_penguins[i].move(Direction::Up);
-						moved = true;
-					}
-					else
-					{
-						m_penguins[i].m_facing = newDirection(Direction::Right);
-					}
-					break;
-				default:
-					break;
 				}
 			}
 		}
@@ -97,7 +108,7 @@ void GamePlay::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color::Black);
 	window.draw(m_background, &m_newTexture.getTexture());	
-	for (int i = 0; i < MAXPENGUIN; i++)
+	for (int i = 0; i < MAX_PENGUIN; i++)
 	{
 		window.draw(m_penguins[i].m_footSteps);
 	}	
@@ -117,7 +128,7 @@ void GamePlay::setupLevel()
 	loadItemsFile();
 	setupItemsVertexes();
 	setupNavigation();
-	for (int i = 0; i < MAXPENGUIN; i++)
+	for (int i = 0; i < MAX_PENGUIN; i++)
 	{
 		while (!m_navigation[m_penguins[i].m_square.x][m_penguins[i].m_square.x])
 		{
@@ -129,15 +140,11 @@ void GamePlay::setupLevel()
 	
 }
 
-void GamePlay::addPenguinVertexes()
-{
-	m_penguinVertexes.clear();
-	for (size_t i = 0; i < MAXPENGUIN; i++)
+void GamePlay::addPenguinVertexes(int index)
+{	
+	for (size_t j = 0; j < 6; j++)
 	{
-		for (size_t j = 0; j < 6; j++)
-		{
-			m_penguinVertexes.append(m_penguins[i].m_vertexes[j]);
-		}		
+		m_penguinVertexes.append(m_penguins[index].m_vertexes[j]);
 	}
 }
 void GamePlay::setupNavigation()
@@ -186,6 +193,8 @@ void GamePlay::setupTexture()
 
 	loadBaseFile();
 	setupBaseVertexes(sf::Vector2f{ left,top });
+	loadItemsFile();
+	setupBaseItemsVertexes(sf::Vector2f{ left,top });
 	m_newTexture.create(static_cast<int>(width), static_cast<int>(height));
 	m_newTexture.draw(m_background, &TextureManager::texture);
 	m_newTexture.display();
@@ -264,6 +273,46 @@ void GamePlay::setupBaseVertexes(sf::Vector2f targetOffset)
 	}
 }
 
+void GamePlay::setupBaseItemsVertexes(sf::Vector2f targetOffset)
+{
+	sf::Vector2f offset{ m_textureCoOrds.left, m_textureCoOrds.top };
+	for (int row = 0; row < TILES_HIGH; row++)
+	{
+		for (int col = 0; col < TILES_WIDE; col++)
+		{
+			if (m_itemsLevel[row][col] == ICE_POOL)
+			{
+				for (int i = 0; i < 6; i++)
+				{
+					sf::Vertex vertex;
+					switch (i)
+					{
+					case 0:
+					case 3:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE } +targetOffset;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						break;
+					case 1:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +targetOffset;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						break;
+					case 2:
+					case 4:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +targetOffset;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						break;
+					case 5:
+						vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE } +targetOffset;
+						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						break;
+					}
+					m_background.append(vertex);
+				}
+			}
+		}
+	}
+}
+
 void GamePlay::loadItemsFile()
 {
 	std::ifstream infile;
@@ -290,7 +339,7 @@ void GamePlay::setupItemsVertexes()
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			if (m_itemsLevel[row][col] != 0)
+			if (m_itemsLevel[row][col] != 0 && m_itemsLevel[row][col] != ICE_POOL)
 			{
 				for (int i = 0; i < 6; i++)
 				{

@@ -4,10 +4,12 @@
 #include "TextureManager.h"
 #include "Penguin.h"
 
-#define TILES_WIDE 16
-#define TILES_HIGH 16
-#define GRIDSIZE 5
-#define MAX_PENGUINS 5
+
+const int ICE_POOL = 22;
+const int TILES_WIDE = 16;
+const int TILES_HIGH = 16;
+const int GRIDSIZE = 5;
+
 
 
 
@@ -25,9 +27,10 @@ private:
 	void setupLevel();
 	void loadBaseFile();
 	void setupBaseVertexes(sf::Vector2f targetOffset);
+	void setupBaseItemsVertexes(sf::Vector2f targetOffset);
 	void loadItemsFile();
 	void setupItemsVertexes();
-	void addPenguinVertexes();
+	void addPenguinVertexes(int index);
 	void setupNavigation();
 	void setupTexture();
 
@@ -38,7 +41,7 @@ private:
 	sf::VertexArray m_foreground;
 	sf::Font m_font;
 	sf::FloatRect m_textureCoOrds;
-	Penguin m_penguins[MAX_PENGUINS];
+	Penguin m_penguins[MAX_PENGUIN];
 	sf::VertexArray m_penguinVertexes;
 
 	int m_baseLevel[TILES_WIDE][TILES_HIGH];
