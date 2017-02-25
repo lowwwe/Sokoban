@@ -1,5 +1,5 @@
 button = 0 601 600 139
-characters = 601 0 432 288
-penguin = 601 450 96 128
+characters = 601 0 384 256
+penguin = 601 418 96 128
 splash = 0 0 600 600
-tiles = 601 289 160 160
+tiles = 601 257 160 160

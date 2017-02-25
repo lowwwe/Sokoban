@@ -3,6 +3,7 @@
 
 #include "TextureManager.h"
 #include "Penguin.h"
+#include "Player.h"
 
 
 const int ICE_POOL = 22;
@@ -13,7 +14,7 @@ const int GRIDSIZE = 5;
 
 
 
-const sf::Vector2f TOP_LEFT{ 16.0f,16.0f };
+
 
 class GamePlay
 {
@@ -42,6 +43,7 @@ private:
 	sf::Font m_font;
 	sf::FloatRect m_textureCoOrds;
 	Penguin m_penguins[MAX_PENGUIN];
+	Player m_player;
 	sf::VertexArray m_penguinVertexes;
 
 	int m_baseLevel[TILES_WIDE][TILES_HIGH];

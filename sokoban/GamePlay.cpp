@@ -6,12 +6,13 @@
 
 
 
-GamePlay::GamePlay(sf::Font & font):
+GamePlay::GamePlay(sf::Font & font) :
 	m_font{ font },
-	m_background{sf::Triangles},
-	m_foreground{sf::Triangles},
-	m_penguinVertexes{sf::Triangles},
-	m_penguins{ {} }
+	m_background{ sf::Triangles },
+	m_foreground{ sf::Triangles },
+	m_penguinVertexes{ sf::Triangles },
+	m_penguins{ {} },
+	m_player{}
 
 {
 	m_textureCoOrds = TextureManager::getRect("tiles");
@@ -25,7 +26,83 @@ GamePlay::~GamePlay()
 
 void GamePlay::update(sf::Time deltaTime)
 {
+	int row = m_player.m_square.x;
+	int col = m_player.m_square.y;
 	m_penguinVertexes.clear();
+	m_player.update(deltaTime);
+	m_player.fadeFootSteps();
+	if (m_player.m_ready)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
+				&& m_navigation[row + 2][col])
+			{
+				m_itemsLevel[row + 2][col] = m_itemsLevel[row + 1][col];
+				m_itemsLevel[row + 1][col] = 0;
+				m_player.move(Direction::Down);
+				setupItemsVertexes();
+				setupNavigation();
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+				&& m_navigation[row - 2][col])
+			{
+				m_itemsLevel[row - 2][col] = m_itemsLevel[row - 1][col];
+				m_itemsLevel[row - 1][col] = 0;
+			
+				setupItemsVertexes();
+				setupNavigation();
+				m_player.move(Direction::Up);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
+				&& m_navigation[row][col - 2])
+			{
+				m_itemsLevel[row ][col -2] = m_itemsLevel[row][col-1];
+				m_itemsLevel[row][col-1] = 0;
+				
+				setupItemsVertexes();
+				setupNavigation();
+				m_player.move(Direction::Left);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
+				&& m_navigation[row][col + 2])
+			{
+				m_itemsLevel[row][col + 2] = m_itemsLevel[row][col + 1];
+				m_itemsLevel[row][col + 1] = 0;
+				
+				setupItemsVertexes();
+				setupNavigation();
+				m_player.move(Direction::Right);
+			}
+		}
+		else
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
+				&& m_navigation[row + 1][col])
+			{
+				m_player.move(Direction::Down);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+				&& m_navigation[row - 1][col])
+			{
+				m_player.move(Direction::Up);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
+				&& m_navigation[row][col - 1])
+			{
+				m_player.move(Direction::Left);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
+				&& m_navigation[row][col + 1])
+			{
+				m_player.move(Direction::Right);
+			}
+		}
+	}
+	for (size_t j = 0; j < 6; j++)
+	{
+		m_penguinVertexes.append(m_player.m_vertexes[j]);
+	}
 	for (size_t i = 0; i < MAX_PENGUIN; i++)
 	{
 		bool moved{ false };
@@ -36,8 +113,8 @@ void GamePlay::update(sf::Time deltaTime)
 			addPenguinVertexes(i);
 			if (m_penguins[i].m_ready)
 			{
-				int row = m_penguins[i].m_square.x;
-				int col = m_penguins[i].m_square.y;
+				row = m_penguins[i].m_square.x;
+				col = m_penguins[i].m_square.y;
 				if (m_itemsLevel[row][col] == ICE_POOL)
 				{
 					m_penguins[i].drown();
@@ -112,6 +189,7 @@ void GamePlay::render(sf::RenderWindow & window)
 	{
 		window.draw(m_penguins[i].m_footSteps);
 	}	
+	window.draw(m_player.m_footSteps);
 	window.draw(m_penguinVertexes, &m_newTexture.getTexture());
 	window.draw(m_foreground, &m_newTexture.getTexture());
 	
@@ -128,6 +206,13 @@ void GamePlay::setupLevel()
 	loadItemsFile();
 	setupItemsVertexes();
 	setupNavigation();
+	while (!m_navigation[m_player.m_square.x][m_player.m_square.x])
+	{
+		m_player.m_square.x = std::rand() % 16;
+		m_player.m_square.y = std::rand() % 16;
+	}
+	m_player.position();
+	m_navigation[m_player.m_square.x][m_player.m_square.y] = false;
 	for (int i = 0; i < MAX_PENGUIN; i++)
 	{
 		while (!m_navigation[m_penguins[i].m_square.x][m_penguins[i].m_square.x])
@@ -137,6 +222,7 @@ void GamePlay::setupLevel()
 		}
 		m_penguins[i].position();
 	}
+	m_navigation[m_player.m_square.x][m_player.m_square.y] = true;
 	
 }
 
@@ -195,9 +281,17 @@ void GamePlay::setupTexture()
 	setupBaseVertexes(sf::Vector2f{ left,top });
 	loadItemsFile();
 	setupBaseItemsVertexes(sf::Vector2f{ left,top });
-	m_newTexture.create(static_cast<int>(width), static_cast<int>(height));
+	if (!m_newTexture.create(static_cast<int>(width), static_cast<int>(height)))
+	{
+		std::cout << "problem creating texture" << std::endl;
+	}
+
+	sf::Vector2u  size = m_newTexture.getSize();
+	m_newTexture.setView(sf::View(sf::FloatRect{ 0.0f,0.0f,static_cast<float>(size.x),static_cast<float>(size.y) }));
 	m_newTexture.draw(m_background, &TextureManager::texture);
+	 size = m_newTexture.getSize();
 	m_newTexture.display();
+	 size = m_newTexture.getSize();
 	m_background.clear();
 
 	m_background.append({ { 16,16 },{ left,top } });
@@ -335,6 +429,7 @@ void GamePlay::loadItemsFile()
 void GamePlay::setupItemsVertexes()
 {
 	sf::Vector2f offset{ m_textureCoOrds.left, m_textureCoOrds.top };
+	m_foreground.clear();
 	for (int row = 0; row < TILES_HIGH; row++)
 	{
 		for (int col = 0; col < TILES_WIDE; col++)

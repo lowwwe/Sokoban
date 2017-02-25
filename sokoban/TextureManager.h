@@ -3,6 +3,11 @@
 
 #include <SFML\Graphics.hpp>
 
+const float TILE_SIZE{ 32.0f }; // how wide our sprite tiles are
+const sf::Vector2f TOP_LEFT{ 16.0f,16.0f };
+
+
+
 struct SpritInfo
 {
 	std::string name;

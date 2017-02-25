@@ -1,5 +1,5 @@
 #include "Penguin.h"
-#include "TextureManager.h"
+
 #include "Colours.h"
 
 
@@ -21,12 +21,9 @@ Penguin::Penguin() :
 	sf::FloatRect textureCoOrds = TextureManager::getRect("penguin");
 	m_texOffset = sf::Vector2f{ textureCoOrds.left, textureCoOrds.top };
 	updateVertexes();
-	updateTexCoords();
-	
+	updateTexCoords();	
 	m_velocity = sf::Vector2f(0.0f, m_step);
-	//m_position.x = 16 + m_square.y * TILE_SIZE;
-	//m_position.y = 16 + m_square.x * TILE_SIZE;
-	updateVertexes();
+	
 	for (int i = 0; i < MAX_FOOT_STEPS_6; i++)
 	{
 		m_footSteps[i].color = FADE;
@@ -42,7 +39,7 @@ bool Penguin::move(Direction direction)
 {
 	m_ready = false;
 	m_facing = direction;
-	m_stepstaken = NO_STEPS;
+	m_stepstaken = NO_PENGUIN_STEPS;
 	switch (direction)
 	{
 	case Direction::Down:
@@ -105,8 +102,8 @@ void Penguin::update(sf::Time deltaTime)
 
 void Penguin::position()
 {
-	m_position.x = 16 + m_square.y * TILE_SIZE;
-	m_position.y = 16 + m_square.x * TILE_SIZE;
+	m_position.x = TOP_LEFT.x + m_square.y * TILE_SIZE;
+	m_position.y = TOP_LEFT.y + m_square.x * TILE_SIZE;
 }
 
 void Penguin::drown()
@@ -126,10 +123,10 @@ void Penguin::updateVertexesDrowning()
 {
 	float height =  static_cast<float>(m_drownStep);
 	m_vertexes[0].position = m_position;
-	m_vertexes[1].position = m_position + sf::Vector2f{ 32.0f, 0.0f };
-	m_vertexes[2].position = m_position + sf::Vector2f{ 32.0f, height };
+	m_vertexes[1].position = m_position + sf::Vector2f{ TILE_SIZE, 0.0f };
+	m_vertexes[2].position = m_position + sf::Vector2f{ TILE_SIZE, height };
 	m_vertexes[3].position = m_position;
-	m_vertexes[4].position = m_position + sf::Vector2f{ 32.0f, height };
+	m_vertexes[4].position = m_position + sf::Vector2f{ TILE_SIZE, height };
 	m_vertexes[5].position = m_position + sf::Vector2f{ 0.0f, height };
 }
 
@@ -137,11 +134,11 @@ void Penguin::updateVertexes()
 {
 	
 	m_vertexes[0].position = m_position;
-	m_vertexes[1].position = m_position + sf::Vector2f{32.0f, 0.0f};
-	m_vertexes[2].position = m_position + sf::Vector2f{ 32.0f, 32.0f };
+	m_vertexes[1].position = m_position + sf::Vector2f{ TILE_SIZE, 0.0f};
+	m_vertexes[2].position = m_position + sf::Vector2f{ TILE_SIZE, TILE_SIZE };
 	m_vertexes[3].position = m_position;
-	m_vertexes[4].position = m_position + sf::Vector2f{ 32.0f, 32.0f };
-	m_vertexes[5].position = m_position + sf::Vector2f{ 0.0f, 32.0f };	
+	m_vertexes[4].position = m_position + sf::Vector2f{ TILE_SIZE, TILE_SIZE };
+	m_vertexes[5].position = m_position + sf::Vector2f{ 0.0f, TILE_SIZE };
 }
 
 void Penguin::updateTexCoords()
@@ -185,7 +182,7 @@ void Penguin::addFootStep()
 				height.y = 4.0f;
 				if (m_leftFoot)
 				{
-					footPosition = m_position + sf::Vector2f(11, 30);
+					footPosition = m_position + sf::Vector2f(11, 20);
 				}
 				else
 				{
