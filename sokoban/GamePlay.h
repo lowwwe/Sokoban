@@ -38,7 +38,11 @@ private:
 	void addPenguinVertexes(int index);
 	void setupNavigation();
 	void setupTexture();
-
+	void setupBuckets();
+	void addBucketVertexes();
+	void playerMovement();
+	void moveBucket(sf::Vector2i square, Direction direction);
+	void updateBuckets(sf::Time deltaTime);
 	Direction newDirection(Direction default);
 	
 	sf::RenderTexture m_newTexture;
@@ -48,11 +52,15 @@ private:
 	sf::FloatRect m_textureCoOrds;
 	Penguin m_penguins[MAX_PENGUIN];
 	Player m_player;
+	std::vector<Bucket> m_buckets;
 	sf::VertexArray m_penguinVertexes;
 
 	int m_baseLevel[TILES_WIDE][TILES_HIGH];
 	int m_itemsLevel[TILES_WIDE][TILES_HIGH];
 	bool m_navigation[TILES_WIDE][TILES_HIGH];
+	sf::Time m_timer;
+	sf::Text m_clock;
+
 };
 
 #endif // !GAMEPLAY

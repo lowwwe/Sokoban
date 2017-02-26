@@ -4,7 +4,8 @@
 
 
 Licence::Licence(sf::Font & font) :
-	m_font{ font }
+	m_font{ font },
+	m_delay{ sf::seconds(0) }
 {
 	m_licenceText.setFont(font);
 	m_licenceText.setCharacterSize(24);

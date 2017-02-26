@@ -94,6 +94,7 @@ void Player::position()
 {
 	m_position.x = TOP_LEFT.x + m_square.y * TILE_SIZE;
 	m_position.y = TOP_LEFT.y + m_square.x * TILE_SIZE;
+	updateVertexes();
 }
 
 void Player::fadeFootSteps()

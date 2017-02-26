@@ -12,8 +12,8 @@ GamePlay::GamePlay(sf::Font & font) :
 	m_foreground{ sf::Triangles },
 	m_penguinVertexes{ sf::Triangles },
 	m_penguins{ {} },
-	m_player{}
-
+	m_player{},
+	m_timer{ sf::seconds(0) }
 {
 	m_textureCoOrds = TextureManager::getRect("tiles");
 	setupLevel();
@@ -26,95 +26,13 @@ GamePlay::~GamePlay()
 
 void GamePlay::update(sf::Time deltaTime)
 {
-	int row = m_player.m_square.x;
-	int col = m_player.m_square.y;
+	
 	m_penguinVertexes.clear();
+	updateBuckets(deltaTime);
+	addBucketVertexes();
 	m_player.update(deltaTime);
 	m_player.fadeFootSteps();
-	if (m_player.m_ready)
-	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-		{
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
-				&& m_navigation[row + 2][col] &&
-				(
-					m_itemsLevel[row + 1][col] == BUCKET1 ||
-					m_itemsLevel[row + 1][col] == BUCKET2 ||
-					m_itemsLevel[row + 1][col] == BUCKET3))
-			{
-				m_itemsLevel[row + 2][col] = m_itemsLevel[row + 1][col];
-				m_itemsLevel[row + 1][col] = 0;
-				m_player.move(Direction::Down);
-				setupItemsVertexes();
-				setupNavigation();
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-				&& m_navigation[row - 2][col] &&
-				(
-					m_itemsLevel[row - 1][col] == BUCKET1 ||
-					m_itemsLevel[row - 1][col] == BUCKET2 ||
-					m_itemsLevel[row - 1][col] == BUCKET3))
-			{
-				m_itemsLevel[row - 2][col] = m_itemsLevel[row - 1][col];
-				m_itemsLevel[row - 1][col] = 0;
-			
-				setupItemsVertexes();
-				setupNavigation();
-				m_player.move(Direction::Up);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
-				&& m_navigation[row][col - 2] &&
-				(
-					m_itemsLevel[row][col-1] == BUCKET1 ||
-					m_itemsLevel[row][col-1] == BUCKET2 ||
-					m_itemsLevel[row][col-1] == BUCKET3))
-			{
-				m_itemsLevel[row ][col -2] = m_itemsLevel[row][col-1];
-				m_itemsLevel[row][col-1] = 0;
-				
-				setupItemsVertexes();
-				setupNavigation();
-				m_player.move(Direction::Left);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
-				&& m_navigation[row][col + 2] &&
-				(
-					m_itemsLevel[row][col + 1] == BUCKET1 ||
-					m_itemsLevel[row][col + 1] == BUCKET2 ||
-					m_itemsLevel[row][col + 1] == BUCKET3))
-			{				
-				m_itemsLevel[row][col + 2] = m_itemsLevel[row][col + 1];
-				m_itemsLevel[row][col + 1] = 0;
-				
-				setupItemsVertexes();
-				setupNavigation();
-				m_player.move(Direction::Right);
-			}
-		}
-		else
-		{
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
-				&& m_navigation[row + 1][col])
-			{
-				m_player.move(Direction::Down);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-				&& m_navigation[row - 1][col])
-			{
-				m_player.move(Direction::Up);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
-				&& m_navigation[row][col - 1])
-			{
-				m_player.move(Direction::Left);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
-				&& m_navigation[row][col + 1])
-			{
-				m_player.move(Direction::Right);
-			}
-		}
-	}
+	playerMovement();
 	for (size_t j = 0; j < 6; j++)
 	{
 		m_penguinVertexes.append(m_player.m_vertexes[j]);
@@ -129,8 +47,8 @@ void GamePlay::update(sf::Time deltaTime)
 			addPenguinVertexes(i);
 			if (m_penguins[i].m_ready)
 			{
-				row = m_penguins[i].m_square.x;
-				col = m_penguins[i].m_square.y;
+				int row = m_penguins[i].m_square.x;
+				int col = m_penguins[i].m_square.y;
 				if (m_itemsLevel[row][col] == ICE_POOL)
 				{
 					m_penguins[i].drown();
@@ -197,6 +115,127 @@ void GamePlay::update(sf::Time deltaTime)
 	}
 }
 
+void GamePlay::playerMovement()
+{
+	int row = m_player.m_square.x;
+	int col = m_player.m_square.y;
+	bool moved{ false };
+
+	if (m_player.m_ready)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		{
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
+				&& m_navigation[row + 2][col] &&
+				(
+					m_itemsLevel[row + 1][col] == BUCKET1 ||
+					m_itemsLevel[row + 1][col] == BUCKET2 ||
+					m_itemsLevel[row + 1][col] == BUCKET3))
+			{
+				m_itemsLevel[row + 2][col] = m_itemsLevel[row + 1][col];
+				m_itemsLevel[row + 1][col] = 0;
+				m_player.move(Direction::Down);
+				moveBucket(sf::Vector2i{ row + 1,col }, Direction::Down);
+				
+				setupNavigation();
+				moved = true;
+			}
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+				&& m_navigation[row - 2][col] &&
+				(
+					m_itemsLevel[row - 1][col] == BUCKET1 ||
+					m_itemsLevel[row - 1][col] == BUCKET2 ||
+					m_itemsLevel[row - 1][col] == BUCKET3))
+			{
+				m_itemsLevel[row - 2][col] = m_itemsLevel[row - 1][col];
+				m_itemsLevel[row - 1][col] = 0;
+				moveBucket(sf::Vector2i{ row -1,col }, Direction::Up);
+				setupNavigation();
+				m_player.move(Direction::Up);
+				moved = true;
+			}
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
+				&& m_navigation[row][col - 2] &&
+				(
+					m_itemsLevel[row][col - 1] == BUCKET1 ||
+					m_itemsLevel[row][col - 1] == BUCKET2 ||
+					m_itemsLevel[row][col - 1] == BUCKET3))
+			{
+				m_itemsLevel[row][col - 2] = m_itemsLevel[row][col - 1];
+				m_itemsLevel[row][col - 1] = 0;
+				moveBucket(sf::Vector2i{ row ,col -1}, Direction::Left);
+				setupNavigation();
+				m_player.move(Direction::Left);
+				moved = true;
+			}
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
+				&& m_navigation[row][col + 2] &&
+				(
+					m_itemsLevel[row][col + 1] == BUCKET1 ||
+					m_itemsLevel[row][col + 1] == BUCKET2 ||
+					m_itemsLevel[row][col + 1] == BUCKET3))
+			{
+				m_itemsLevel[row][col + 2] = m_itemsLevel[row][col + 1];
+				m_itemsLevel[row][col + 1] = 0;
+				moveBucket(sf::Vector2i{ row ,col +1}, Direction::Right);
+				setupNavigation();
+				m_player.move(Direction::Right);
+				moved = true;
+			}
+		}
+		else
+		{
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
+				&& m_navigation[row + 1][col])
+			{
+				m_player.move(Direction::Down);
+				moved = true;
+			}
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+				&& m_navigation[row - 1][col])
+			{
+				m_player.move(Direction::Up);
+				moved = true;
+			}
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
+				&& m_navigation[row][col - 1])
+			{
+				m_player.move(Direction::Left);
+				moved = true;
+			}
+			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
+				&& m_navigation[row][col + 1])
+			{
+				m_player.move(Direction::Right);
+				moved = true;
+			}
+		}
+	}
+}
+
+void GamePlay::moveBucket(sf::Vector2i square, Direction direction)
+{
+	bool found{ false };
+	for (Bucket &var : m_buckets)
+	{
+		if (var.m_square == square)
+		{
+			var.move(direction);
+		}
+	}
+}
+
+void GamePlay::updateBuckets(sf::Time deltaTime)
+{
+	for(Bucket &var : m_buckets)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			var.update(deltaTime);
+		}
+	}
+}
+
 void GamePlay::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color::Black);
@@ -239,14 +278,15 @@ void GamePlay::setupLevel()
 		m_penguins[i].position();
 	}
 	m_navigation[m_player.m_square.x][m_player.m_square.y] = true;
+	setupBuckets();
 	
 }
 
 void GamePlay::addPenguinVertexes(int index)
 {	
-	for (size_t j = 0; j < 6; j++)
+	for (int i = 0; i < 6; i++)
 	{
-		m_penguinVertexes.append(m_penguins[index].m_vertexes[j]);
+		m_penguinVertexes.append(m_penguins[index].m_vertexes[i]);
 	}
 }
 void GamePlay::setupNavigation()
@@ -317,6 +357,31 @@ void GamePlay::setupTexture()
 	m_background.append({ { 16,16 },{ left,top } });
 	m_background.append({ { 528,528 },{ left+512,top + 512 } });
 	m_background.append({ { 528,16 },{ left + 512, top } });
+}
+void GamePlay::setupBuckets()
+{
+	for (int row = 0; row < TILES_HIGH; row++)
+	{
+		for (int col = 0; col < TILES_WIDE; col++)
+		{
+			if (m_itemsLevel[row][col] == BUCKET1 ||
+				m_itemsLevel[row][col] == BUCKET2 ||
+				m_itemsLevel[row][col] == BUCKET3)
+			{
+				m_buckets.push_back(Bucket{ sf::Vector2i{row,col}, m_itemsLevel[row][col] });
+			}
+		}
+	}
+}
+void GamePlay::addBucketVertexes()
+{
+	for each (Bucket var in	m_buckets)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			m_penguinVertexes.append(var.m_vertexes[i]);
+		}
+	}
 }
 Direction GamePlay::newDirection(Direction default)
 {
@@ -450,7 +515,12 @@ void GamePlay::setupItemsVertexes()
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			if (m_itemsLevel[row][col] != 0 && m_itemsLevel[row][col] != ICE_POOL)
+			if (m_itemsLevel[row][col] != 0 && !(
+				m_itemsLevel[row][col] == ICE_POOL ||
+				m_itemsLevel[row][col] == BUCKET1 ||
+				m_itemsLevel[row][col] == BUCKET2 ||
+				m_itemsLevel[row][col] == BUCKET3 
+				))
 			{
 				for (int i = 0; i < 6; i++)
 				{

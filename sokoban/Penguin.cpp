@@ -15,7 +15,9 @@ Penguin::Penguin() :
 	m_square{ 0,0 },
 	m_leftFoot{ false },
 	m_drowning{ false },
-	m_drownStep{ 0 }
+	m_drownStep{ 0 },
+	m_alive{ true },
+	m_ready{ true }
 
 {
 	sf::FloatRect textureCoOrds = TextureManager::getRect("penguin");
