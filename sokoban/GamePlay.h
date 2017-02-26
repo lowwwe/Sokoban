@@ -4,9 +4,13 @@
 #include "TextureManager.h"
 #include "Penguin.h"
 #include "Player.h"
+#include "Bucket.h"
 
 
 const int ICE_POOL = 22;
+const int BUCKET1 = 2;
+const int BUCKET2 = 3;
+const int BUCKET3 = 21;
 const int TILES_WIDE = 16;
 const int TILES_HIGH = 16;
 const int GRIDSIZE = 5;

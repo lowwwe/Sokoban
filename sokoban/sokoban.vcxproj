@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bucket.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePlay.cpp" />
     <ClCompile Include="Licence.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bucket.h" />
     <ClInclude Include="Colours.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />

@@ -36,7 +36,11 @@ void GamePlay::update(sf::Time deltaTime)
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 		{
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
-				&& m_navigation[row + 2][col])
+				&& m_navigation[row + 2][col] &&
+				(
+					m_itemsLevel[row + 1][col] == BUCKET1 ||
+					m_itemsLevel[row + 1][col] == BUCKET2 ||
+					m_itemsLevel[row + 1][col] == BUCKET3))
 			{
 				m_itemsLevel[row + 2][col] = m_itemsLevel[row + 1][col];
 				m_itemsLevel[row + 1][col] = 0;
@@ -45,7 +49,11 @@ void GamePlay::update(sf::Time deltaTime)
 				setupNavigation();
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-				&& m_navigation[row - 2][col])
+				&& m_navigation[row - 2][col] &&
+				(
+					m_itemsLevel[row - 1][col] == BUCKET1 ||
+					m_itemsLevel[row - 1][col] == BUCKET2 ||
+					m_itemsLevel[row - 1][col] == BUCKET3))
 			{
 				m_itemsLevel[row - 2][col] = m_itemsLevel[row - 1][col];
 				m_itemsLevel[row - 1][col] = 0;
@@ -55,7 +63,11 @@ void GamePlay::update(sf::Time deltaTime)
 				m_player.move(Direction::Up);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
-				&& m_navigation[row][col - 2])
+				&& m_navigation[row][col - 2] &&
+				(
+					m_itemsLevel[row][col-1] == BUCKET1 ||
+					m_itemsLevel[row][col-1] == BUCKET2 ||
+					m_itemsLevel[row][col-1] == BUCKET3))
 			{
 				m_itemsLevel[row ][col -2] = m_itemsLevel[row][col-1];
 				m_itemsLevel[row][col-1] = 0;
@@ -65,8 +77,12 @@ void GamePlay::update(sf::Time deltaTime)
 				m_player.move(Direction::Left);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
-				&& m_navigation[row][col + 2])
-			{
+				&& m_navigation[row][col + 2] &&
+				(
+					m_itemsLevel[row][col + 1] == BUCKET1 ||
+					m_itemsLevel[row][col + 1] == BUCKET2 ||
+					m_itemsLevel[row][col + 1] == BUCKET3))
+			{				
 				m_itemsLevel[row][col + 2] = m_itemsLevel[row][col + 1];
 				m_itemsLevel[row][col + 1] = 0;
 				
