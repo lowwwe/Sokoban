@@ -326,12 +326,12 @@ void GamePlay::setupTexture()
 	float width = static_cast<float>(TextureManager::texture.getSize().x);
 	float height = static_cast<float>(TextureManager::texture.getSize().y);
 	m_background.append({ { 0,0 },{ 0,0 } });
-	m_background.append({ { 0,width },{ 0,width } });
-	m_background.append({ { height,width },{ height,width } });
+	m_background.append({ { width,0 },{ width,0 } });
+	m_background.append({ { width,height },{ width,height } });
 
 	m_background.append({ { 0,0 },{ 0,0 } });
-	m_background.append({ { height,width },{ height,width } });
-	m_background.append({ { height,0 },{ height,0 } });
+	m_background.append({ { width,height },{ width,height } });
+	m_background.append({ { 0,height },{ 0,height } });
 
 	loadBaseFile();
 	setupBaseVertexes(sf::Vector2f{ left,top });

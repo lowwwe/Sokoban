@@ -26,12 +26,12 @@ Game::Game(sf::Font & font) :
 	drawFrameCount = 0;
 	secondTime = sf::Time::Zero;
 	updateFps.setFont(m_font);
-	updateFps.setPosition(20, 530);
-	updateFps.setCharacterSize(24);
+	updateFps.setPosition(120, 560);
+	updateFps.setCharacterSize(12);
 	updateFps.setColor(sf::Color::White);
 	drawFps.setFont(m_font);
 	drawFps.setPosition(20, 560);
-	drawFps.setCharacterSize(24);
+	drawFps.setCharacterSize(12);
 	drawFps.setColor(sf::Color::White);
 #endif // TEST_FPS
 }
