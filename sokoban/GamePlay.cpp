@@ -13,9 +13,14 @@ GamePlay::GamePlay(sf::Font & font) :
 	m_penguinVertexes{ sf::Triangles },
 	m_penguins{ {} },
 	m_player{},
-	m_timer{ sf::seconds(0) }
+	m_timer{ sf::seconds(0) },
+	m_gameOver {false}
 {
 	m_textureCoOrds = TextureManager::getRect("tiles");
+	m_clock.setFont(m_font);
+	m_clock.setCharacterSize(20);
+	m_clock.setColor(sf::Color::White);
+	m_clock.setPosition(sf::Vector2f{ 500.0f,550.0f });
 	setupLevel();
 }
 
@@ -23,26 +28,16 @@ GamePlay::GamePlay(sf::Font & font) :
 GamePlay::~GamePlay()
 {
 }
-
-void GamePlay::update(sf::Time deltaTime)
+bool GamePlay::penguinMovement(sf::Time deltaTime)
 {
-	
-	m_penguinVertexes.clear();
-	updateBuckets(deltaTime);
-	addBucketVertexes();
-	m_player.update(deltaTime);
-	m_player.fadeFootSteps();
-	playerMovement();
-	for (size_t j = 0; j < 6; j++)
-	{
-		m_penguinVertexes.append(m_player.m_vertexes[j]);
-	}
+	bool allDead{ true };
 	for (size_t i = 0; i < MAX_PENGUIN; i++)
 	{
 		bool moved{ false };
 		m_penguins[i].fadeFootSteps();
 		if (m_penguins[i].m_alive)
 		{
+			allDead = false;
 			m_penguins[i].update(deltaTime);
 			addPenguinVertexes(i);
 			if (m_penguins[i].m_ready)
@@ -53,7 +48,7 @@ void GamePlay::update(sf::Time deltaTime)
 				{
 					m_penguins[i].drown();
 					moved = true; // ensure penguin doenst move
-				}				
+				}
 				while (!moved)
 				{
 					switch (m_penguins[i].m_facing)
@@ -111,6 +106,29 @@ void GamePlay::update(sf::Time deltaTime)
 					}
 				}
 			}
+		}
+	}
+	return allDead;
+}
+
+void GamePlay::update(sf::Time deltaTime)
+{
+	updateClock(deltaTime);
+	m_penguinVertexes.clear();
+	updateBuckets(deltaTime);
+	addBucketVertexes();
+	m_player.update(deltaTime);
+	m_player.fadeFootSteps();
+	playerMovement();
+	for (size_t j = 0; j < 6; j++)
+	{
+		m_penguinVertexes.append(m_player.m_vertexes[j]);
+	}
+	if(penguinMovement(deltaTime)) // true when all dead
+	{ 
+		if (m_itemsLevel[m_player.m_square.x][m_player.m_square.y] == EXIT)
+		{
+			m_gameOver = true;
 		}
 	}
 }
@@ -247,6 +265,7 @@ void GamePlay::render(sf::RenderWindow & window)
 	window.draw(m_player.m_footSteps);
 	window.draw(m_penguinVertexes, &m_newTexture.getTexture());
 	window.draw(m_foreground, &m_newTexture.getTexture());
+	window.draw(m_clock);
 	
 }
 
@@ -391,6 +410,32 @@ Direction GamePlay::newDirection(Direction default)
 		return default;
 	}
 	return static_cast<Direction>(choice);
+}
+void GamePlay::updateClock(sf::Time deltaTime)
+{
+	std::string time;
+	m_timer += deltaTime;
+	int min = static_cast<int>( m_timer.asSeconds()) / 60;
+	int seconds = static_cast<int>(m_timer.asSeconds()) % 60;
+	int hundreds = static_cast<int>((m_timer.asSeconds() * 100.0f) - (seconds * 100.0f));
+	if(min >0)
+	{ 
+		time = std::to_string(min) + ":";
+		if (seconds < 10)
+		{
+			time += "0";
+		}
+		if (seconds == 0)
+		{
+			time += "0";
+		}
+	}
+	time += std::to_string(seconds);
+	if (m_gameOver)
+	{
+		time += std::to_string(hundreds);
+	}
+	m_clock.setString(time);
 }
 void GamePlay::loadBaseFile()
 {

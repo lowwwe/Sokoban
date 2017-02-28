@@ -8,6 +8,7 @@
 
 
 const int ICE_POOL = 22;
+const int EXIT = 24;
 const int BUCKET1 = 2;
 const int BUCKET2 = 3;
 const int BUCKET3 = 21;
@@ -60,6 +61,9 @@ private:
 	bool m_navigation[TILES_WIDE][TILES_HIGH];
 	sf::Time m_timer;
 	sf::Text m_clock;
+	void updateClock(sf::Time deltaTime);
+	bool m_gameOver; // used to show time when finshed
+	bool penguinMovement(sf::Time deltaTime);
 
 };
 
