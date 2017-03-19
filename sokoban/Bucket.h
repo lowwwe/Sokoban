@@ -17,6 +17,7 @@ public:
 	int m_foregroundItem;
 	void initialise(sf::Vector2i square, Direction direction, int bucketType);
 	void move(Direction direction);
+	bool m_shoved;
 
 private:
 	float m_step = TILE_SIZE / NO_PLAYER_STEPS; // distance traveled per update
@@ -28,6 +29,7 @@ private:
 	void updateVertexes();
 	void updateTexCoords();
 	sf::Vector2f m_velocity; // displacement for sprite per update
+	Direction m_direction;
 	
 };
 

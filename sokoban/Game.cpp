@@ -103,7 +103,7 @@ void Game::processEvents()
 		
 			break;
 		case GameState::Game:
-		
+			m_gamePlay.processEvents(event);
 			break;
 		case GameState::Credits:
 

@@ -1,11 +1,14 @@
 #include "Bucket.h"
+#include "GamePlay.h"
 
 
 
 Bucket::Bucket(sf::Vector2i square, int type)
 	: m_square{square},
 	m_bucketNo{type},
-	m_stepstaken{ 0 }
+	m_stepstaken{ 0 },
+	m_shoved{ false },
+	m_direction {Direction::None}
 {
 	sf::FloatRect textureCoOrds = TextureManager::getRect("tiles");
 	m_texOffset = sf::Vector2f{ textureCoOrds.left + (type % 5)*TILE_SIZE, textureCoOrds.top + (type / 5)* TILE_SIZE};
@@ -28,7 +31,84 @@ bool Bucket::update(sf::Time deltaTime)
 		updateVertexes();
 		if (m_stepstaken == 0)
 		{
-			return(true);
+			if (m_shoved)
+			{
+				switch (m_direction)
+				{
+				case Direction::Down:
+					if (GamePlay::s_navigation[m_square.x+1][m_square.y])
+					{
+						GamePlay::s_itemsLevel[m_square.x + 1][m_square.y] = GamePlay::s_itemsLevel[m_square.x][m_square.y];
+						GamePlay::s_itemsLevel[m_square.x][m_square.y] = 0;
+						GamePlay::s_navigation[m_square.x][m_square.y] = true;
+						GamePlay::s_navigation[m_square.x+1][m_square.y] = false;
+						m_velocity = sf::Vector2f(0.0f, m_step);
+						m_square.x++;
+						m_stepstaken = NO_PLAYER_STEPS;
+					}
+					else
+					{
+						m_shoved = false;
+					}
+					break;
+				case Direction::Left:
+					if (GamePlay::s_navigation[m_square.x][m_square.y-1])
+					{
+						GamePlay::s_itemsLevel[m_square.x][m_square.y-1] = GamePlay::s_itemsLevel[m_square.x][m_square.y];
+						GamePlay::s_itemsLevel[m_square.x][m_square.y] = 0;
+						GamePlay::s_navigation[m_square.x][m_square.y] = true;
+						GamePlay::s_navigation[m_square.x][m_square.y-1] = false;
+						m_velocity = sf::Vector2f(-m_step, 0.0f);
+						m_square.y--;
+						m_stepstaken = NO_PLAYER_STEPS;
+					}
+					else
+					{
+						m_shoved = false;
+					}					
+					break;
+				case Direction::Right:
+					if(GamePlay::s_navigation[m_square.x][m_square.y + 1])
+					{
+						GamePlay::s_itemsLevel[m_square.x][m_square.y + 1] = GamePlay::s_itemsLevel[m_square.x][m_square.y];
+						GamePlay::s_itemsLevel[m_square.x][m_square.y] = 0;
+						GamePlay::s_navigation[m_square.x][m_square.y] = true;
+						GamePlay::s_navigation[m_square.x][m_square.y + 1] = false;
+						m_velocity = sf::Vector2f(m_step, 0.0f);
+						m_square.y++;
+						m_stepstaken = NO_PLAYER_STEPS;
+					}
+					else
+					{
+						m_shoved = false;
+					}
+					break;
+					
+				case Direction::Up:
+					if (GamePlay::s_navigation[m_square.x - 1][m_square.y])
+					{
+						GamePlay::s_itemsLevel[m_square.x - 1][m_square.y] = GamePlay::s_itemsLevel[m_square.x][m_square.y];
+						GamePlay::s_itemsLevel[m_square.x][m_square.y] = 0;
+						GamePlay::s_navigation[m_square.x][m_square.y] = true;
+						GamePlay::s_navigation[m_square.x - 1][m_square.y] = false;
+						m_velocity = sf::Vector2f(0.0f, -m_step);
+						m_square.x--;
+						m_stepstaken = NO_PLAYER_STEPS;
+					}
+					else
+					{
+						m_shoved = false;
+					}					
+					break;
+				default:
+					break;
+				}
+				
+			}
+			else
+			{
+				return(true);
+			}
 		}
 	}
 	return false;
@@ -41,6 +121,7 @@ void Bucket::initialise(sf::Vector2i square, Direction direction, int bucketType
 void Bucket::move(Direction direction)
 {	
 	m_stepstaken = NO_PLAYER_STEPS;
+	m_direction = direction;
 	switch (direction)
 	{
 	case Direction::Down:

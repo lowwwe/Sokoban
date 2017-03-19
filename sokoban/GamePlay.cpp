@@ -2,9 +2,12 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "Game.h"
 
 
 
+bool GamePlay::s_navigation[TILES_WIDE][TILES_HIGH];
+int GamePlay::s_itemsLevel[TILES_WIDE][TILES_HIGH];
 
 GamePlay::GamePlay(sf::Font & font) :
 	m_font{ font },
@@ -14,14 +17,17 @@ GamePlay::GamePlay(sf::Font & font) :
 	m_penguins{ {} },
 	m_player{},
 	m_timer{ sf::seconds(0) },
-	m_gameOver {false}
+	m_gameOver{ false },
+	m_pushing{ false },
+	m_shoving{ false },
+	m_countDownTimer{ 0 }
 {
 	m_textureCoOrds = TextureManager::getRect("tiles");
 	m_clock.setFont(m_font);
 	m_clock.setCharacterSize(20);
 	m_clock.setColor(sf::Color::White);
 	m_clock.setPosition(sf::Vector2f{ 500.0f,550.0f });
-	setupLevel();
+	setupLevel(1);
 }
 
 
@@ -39,12 +45,20 @@ bool GamePlay::penguinMovement(sf::Time deltaTime)
 		{
 			allDead = false;
 			m_penguins[i].update(deltaTime);
+			int row = m_penguins[i].m_square.x;
+			int col = m_penguins[i].m_square.y;
+			
+			if (s_itemsLevel[row][col] == BUCKET1 ||
+				s_itemsLevel[row][col] == BUCKET2 ||
+				s_itemsLevel[row][col] == BUCKET3)
+			{
+				m_penguins[i].drown();
+			}
 			addPenguinVertexes(i);
 			if (m_penguins[i].m_ready)
 			{
-				int row = m_penguins[i].m_square.x;
-				int col = m_penguins[i].m_square.y;
-				if (m_itemsLevel[row][col] == ICE_POOL)
+				
+				if (s_itemsLevel[row][col] == ICE_POOL)
 				{
 					m_penguins[i].drown();
 					moved = true; // ensure penguin doenst move
@@ -54,7 +68,7 @@ bool GamePlay::penguinMovement(sf::Time deltaTime)
 					switch (m_penguins[i].m_facing)
 					{
 					case Direction::Down:
-						if (m_navigation[row + 1][col])
+						if (s_navigation[row + 1][col])
 						{
 							std::cout << "down x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
 							m_penguins[i].move(Direction::Down);
@@ -66,7 +80,7 @@ bool GamePlay::penguinMovement(sf::Time deltaTime)
 						}
 						break;
 					case Direction::Left:
-						if (m_navigation[row][col - 1])
+						if (s_navigation[row][col - 1])
 						{
 							std::cout << "Left x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
 							m_penguins[i].move(Direction::Left);
@@ -78,7 +92,7 @@ bool GamePlay::penguinMovement(sf::Time deltaTime)
 						}
 						break;
 					case Direction::Right:
-						if (m_navigation[row][col + 1])
+						if (s_navigation[row][col + 1])
 						{
 							std::cout << "Right x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
 							m_penguins[i].move(Direction::Right);
@@ -90,7 +104,7 @@ bool GamePlay::penguinMovement(sf::Time deltaTime)
 						}
 						break;
 					case Direction::Up:
-						if (m_navigation[row - 1][col])
+						if (s_navigation[row - 1][col])
 						{
 							std::cout << "UP x" << m_penguins[i].m_square.x << ", y " << m_penguins[i].m_square.y << std::endl;
 							m_penguins[i].move(Direction::Up);
@@ -126,9 +140,17 @@ void GamePlay::update(sf::Time deltaTime)
 	}
 	if(penguinMovement(deltaTime)) // true when all dead
 	{ 
-		if (m_itemsLevel[m_player.m_square.x][m_player.m_square.y] == EXIT)
+		if (s_itemsLevel[m_player.m_square.x][m_player.m_square.y] == EXIT)
 		{
 			m_gameOver = true;
+			m_countDownTimer = 120;
+		}
+	}
+	if (m_gameOver)
+	{
+		if (m_countDownTimer-- < 0)
+		{
+			Game::currentState = GameState::MainMenu;
 		}
 	}
 }
@@ -138,91 +160,92 @@ void GamePlay::playerMovement()
 	int row = m_player.m_square.x;
 	int col = m_player.m_square.y;
 	bool moved{ false };
-
+	bool shove{ false };
 	if (m_player.m_ready)
 	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		if (m_shoving || m_pushing)
 		{
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
-				&& m_navigation[row + 2][col] &&
+				&& s_navigation[row + 2][col] &&
 				(
-					m_itemsLevel[row + 1][col] == BUCKET1 ||
-					m_itemsLevel[row + 1][col] == BUCKET2 ||
-					m_itemsLevel[row + 1][col] == BUCKET3))
+					s_itemsLevel[row + 1][col] == BUCKET1 ||
+					s_itemsLevel[row + 1][col] == BUCKET2 ||
+					s_itemsLevel[row + 1][col] == BUCKET3))
 			{
-				m_itemsLevel[row + 2][col] = m_itemsLevel[row + 1][col];
-				m_itemsLevel[row + 1][col] = 0;
+				s_itemsLevel[row + 2][col] = s_itemsLevel[row + 1][col];
+				s_itemsLevel[row + 1][col] = 0;
 				m_player.move(Direction::Down);
-				moveBucket(sf::Vector2i{ row + 1,col }, Direction::Down);
-				
+				moveBucket(sf::Vector2i{ row + 1,col }, Direction::Down, m_shoving);
+
 				setupNavigation();
 				moved = true;
 			}
+
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-				&& m_navigation[row - 2][col] &&
+				&& s_navigation[row - 2][col] &&
 				(
-					m_itemsLevel[row - 1][col] == BUCKET1 ||
-					m_itemsLevel[row - 1][col] == BUCKET2 ||
-					m_itemsLevel[row - 1][col] == BUCKET3))
+					s_itemsLevel[row - 1][col] == BUCKET1 ||
+					s_itemsLevel[row - 1][col] == BUCKET2 ||
+					s_itemsLevel[row - 1][col] == BUCKET3))
 			{
-				m_itemsLevel[row - 2][col] = m_itemsLevel[row - 1][col];
-				m_itemsLevel[row - 1][col] = 0;
-				moveBucket(sf::Vector2i{ row -1,col }, Direction::Up);
+				s_itemsLevel[row - 2][col] = s_itemsLevel[row - 1][col];
+				s_itemsLevel[row - 1][col] = 0;
+				moveBucket(sf::Vector2i{ row - 1,col }, Direction::Up, m_shoving);
 				setupNavigation();
-				m_player.move(Direction::Up);
+				//m_player.move(Direction::Up);
 				moved = true;
 			}
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
-				&& m_navigation[row][col - 2] &&
+				&& s_navigation[row][col - 2] &&
 				(
-					m_itemsLevel[row][col - 1] == BUCKET1 ||
-					m_itemsLevel[row][col - 1] == BUCKET2 ||
-					m_itemsLevel[row][col - 1] == BUCKET3))
+					s_itemsLevel[row][col - 1] == BUCKET1 ||
+					s_itemsLevel[row][col - 1] == BUCKET2 ||
+					s_itemsLevel[row][col - 1] == BUCKET3))
 			{
-				m_itemsLevel[row][col - 2] = m_itemsLevel[row][col - 1];
-				m_itemsLevel[row][col - 1] = 0;
-				moveBucket(sf::Vector2i{ row ,col -1}, Direction::Left);
+				s_itemsLevel[row][col - 2] = s_itemsLevel[row][col - 1];
+				s_itemsLevel[row][col - 1] = 0;
+				moveBucket(sf::Vector2i{ row ,col - 1 }, Direction::Left, m_shoving);
 				setupNavigation();
-				m_player.move(Direction::Left);
+				//m_player.move(Direction::Left);
 				moved = true;
 			}
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
-				&& m_navigation[row][col + 2] &&
+				&& s_navigation[row][col + 2] &&
 				(
-					m_itemsLevel[row][col + 1] == BUCKET1 ||
-					m_itemsLevel[row][col + 1] == BUCKET2 ||
-					m_itemsLevel[row][col + 1] == BUCKET3))
+					s_itemsLevel[row][col + 1] == BUCKET1 ||
+					s_itemsLevel[row][col + 1] == BUCKET2 ||
+					s_itemsLevel[row][col + 1] == BUCKET3))
 			{
-				m_itemsLevel[row][col + 2] = m_itemsLevel[row][col + 1];
-				m_itemsLevel[row][col + 1] = 0;
-				moveBucket(sf::Vector2i{ row ,col +1}, Direction::Right);
+				s_itemsLevel[row][col + 2] = s_itemsLevel[row][col + 1];
+				s_itemsLevel[row][col + 1] = 0;
+				moveBucket(sf::Vector2i{ row ,col + 1 }, Direction::Right, m_shoving);
 				setupNavigation();
-				m_player.move(Direction::Right);
+				//m_player.move(Direction::Right);
 				moved = true;
 			}
 		}
-		else
+		if (!m_pushing && !m_shoving)
 		{
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
-				&& m_navigation[row + 1][col])
+				&& s_navigation[row + 1][col])
 			{
 				m_player.move(Direction::Down);
 				moved = true;
 			}
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-				&& m_navigation[row - 1][col])
+				&& s_navigation[row - 1][col])
 			{
 				m_player.move(Direction::Up);
 				moved = true;
 			}
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
-				&& m_navigation[row][col - 1])
+				&& s_navigation[row][col - 1])
 			{
 				m_player.move(Direction::Left);
 				moved = true;
 			}
 			if (!moved && sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
-				&& m_navigation[row][col + 1])
+				&& s_navigation[row][col + 1])
 			{
 				m_player.move(Direction::Right);
 				moved = true;
@@ -231,7 +254,8 @@ void GamePlay::playerMovement()
 	}
 }
 
-void GamePlay::moveBucket(sf::Vector2i square, Direction direction)
+
+void GamePlay::moveBucket(sf::Vector2i square, Direction direction, bool shove)
 {
 	bool found{ false };
 	for (Bucket &var : m_buckets)
@@ -239,6 +263,7 @@ void GamePlay::moveBucket(sf::Vector2i square, Direction direction)
 		if (var.m_square == square)
 		{
 			var.move(direction);
+			var.m_shoved = shove ;
 		}
 	}
 }
@@ -271,32 +296,54 @@ void GamePlay::render(sf::RenderWindow & window)
 
 void GamePlay::processEvents(sf::Event & event)
 {
+	if (sf::Event::KeyReleased == event.type)
+	{
+		if (sf::Keyboard::Key::LShift == event.key.code)
+		{
+			m_pushing = false;
+		}
+		if (sf::Keyboard::Key::LAlt == event.key.code)
+		{
+			m_shoving = false;
+		}
+	}
+	if (sf::Event::KeyPressed == event.type)
+	{
+		if (sf::Keyboard::Key::LShift == event.key.code)
+		{
+			m_pushing = true;
+		}
+		if (sf::Keyboard::Key::LAlt == event.key.code)
+		{
+			m_shoving = true;
+		}
+	}
 }
 
-void GamePlay::setupLevel()
+void GamePlay::setupLevel(int level)
 {
 	
-	setupTexture();
-	loadItemsFile();
+	setupTexture(level);
+	loadItemsFile(level);
 	setupItemsVertexes();
 	setupNavigation();
-	while (!m_navigation[m_player.m_square.x][m_player.m_square.x])
+	while (!s_navigation[m_player.m_square.x][m_player.m_square.x])
 	{
 		m_player.m_square.x = std::rand() % 16;
 		m_player.m_square.y = std::rand() % 16;
 	}
 	m_player.position();
-	m_navigation[m_player.m_square.x][m_player.m_square.y] = false;
+	s_navigation[m_player.m_square.x][m_player.m_square.y] = false;
 	for (int i = 0; i < MAX_PENGUIN; i++)
 	{
-		while (!m_navigation[m_penguins[i].m_square.x][m_penguins[i].m_square.x])
+		while (!s_navigation[m_penguins[i].m_square.x][m_penguins[i].m_square.x])
 		{
 			m_penguins[i].m_square.x = std::rand() % 16;
 			m_penguins[i].m_square.y = std::rand() % 16;
 		}
 		m_penguins[i].position();
 	}
-	m_navigation[m_player.m_square.x][m_player.m_square.y] = true;
+	s_navigation[m_player.m_square.x][m_player.m_square.y] = true;
 	setupBuckets();
 	
 }
@@ -314,16 +361,16 @@ void GamePlay::setupNavigation()
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			m_navigation[row][col] = true;
+			s_navigation[row][col] = true;
 			switch (m_baseLevel[row][col])
 			{
 			case 1:
 			case 6:
 			case 7:
-				m_navigation[row][col] = false;
+				s_navigation[row][col] = false;
 				break;			
 			}
-			switch (m_itemsLevel[row][col])
+			switch (s_itemsLevel[row][col])
 			{
 			case 2:
 			case 3:
@@ -331,13 +378,13 @@ void GamePlay::setupNavigation()
 			case 18:
 			case 20:
 			case 21:
-				m_navigation[row][col] = false;
+				s_navigation[row][col] = false;
 				break;
 			}
 		}
 	}
 }
-void GamePlay::setupTexture()
+void GamePlay::setupTexture(int level)
 {
 	sf::FloatRect offset = TextureManager::getRect("splash");
 	float top = offset.top;
@@ -352,9 +399,9 @@ void GamePlay::setupTexture()
 	m_background.append({ { width,height },{ width,height } });
 	m_background.append({ { 0,height },{ 0,height } });
 
-	loadBaseFile();
+	loadBaseFile(level);
 	setupBaseVertexes(sf::Vector2f{ left,top });
-	loadItemsFile();
+	loadItemsFile(level);
 	setupBaseItemsVertexes(sf::Vector2f{ left,top });
 	if (!m_newTexture.create(static_cast<int>(width), static_cast<int>(height)))
 	{
@@ -383,11 +430,11 @@ void GamePlay::setupBuckets()
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			if (m_itemsLevel[row][col] == BUCKET1 ||
-				m_itemsLevel[row][col] == BUCKET2 ||
-				m_itemsLevel[row][col] == BUCKET3)
+			if (s_itemsLevel[row][col] == BUCKET1 ||
+				s_itemsLevel[row][col] == BUCKET2 ||
+				s_itemsLevel[row][col] == BUCKET3)
 			{
-				m_buckets.push_back(Bucket{ sf::Vector2i{row,col}, m_itemsLevel[row][col] });
+				m_buckets.push_back(Bucket{ sf::Vector2i{row,col}, s_itemsLevel[row][col] });
 			}
 		}
 	}
@@ -414,7 +461,10 @@ Direction GamePlay::newDirection(Direction default)
 void GamePlay::updateClock(sf::Time deltaTime)
 {
 	std::string time;
-	m_timer += deltaTime;
+	if (!m_gameOver)
+	{
+		m_timer += deltaTime;
+	}
 	int min = static_cast<int>( m_timer.asSeconds()) / 60;
 	int seconds = static_cast<int>(m_timer.asSeconds()) % 60;
 	int hundreds = static_cast<int>((m_timer.asSeconds() * 100.0f) - (seconds * 100.0f));
@@ -433,18 +483,18 @@ void GamePlay::updateClock(sf::Time deltaTime)
 	time += std::to_string(seconds);
 	if (m_gameOver)
 	{
-		time += std::to_string(hundreds);
+		time += "." + std::to_string(hundreds);
 	}
 	m_clock.setString(time);
 }
-void GamePlay::loadBaseFile()
+void GamePlay::loadBaseFile(int level)
 {
 	std::ifstream infile;
 	std::string name;
 	std::string equals;
 	sf::IntRect coords;
 	int i{ 0 };
-	infile.open("ASSETS\\IMAGES\\level1.txt");
+	infile.open("ASSETS\\IMAGES\\level" + std::to_string(level) + ".txt");
 	while (!infile.eof() && i < TILES_HIGH)
 	{
 		infile >> m_baseLevel[i][0] >> m_baseLevel[i][1] >> m_baseLevel[i][2] >> m_baseLevel[i][3]
@@ -500,7 +550,7 @@ void GamePlay::setupBaseItemsVertexes(sf::Vector2f targetOffset)
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			if (m_itemsLevel[row][col] == ICE_POOL)
+			if (s_itemsLevel[row][col] == ICE_POOL)
 			{
 				for (int i = 0; i < 6; i++)
 				{
@@ -510,20 +560,20 @@ void GamePlay::setupBaseItemsVertexes(sf::Vector2f targetOffset)
 					case 0:
 					case 3:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE } +targetOffset;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
 						break;
 					case 1:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +targetOffset;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
 						break;
 					case 2:
 					case 4:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +targetOffset;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 						break;
 					case 5:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE } +targetOffset;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 						break;
 					}
 					m_background.append(vertex);
@@ -533,20 +583,20 @@ void GamePlay::setupBaseItemsVertexes(sf::Vector2f targetOffset)
 	}
 }
 
-void GamePlay::loadItemsFile()
+void GamePlay::loadItemsFile(int level)
 {
 	std::ifstream infile;
 	std::string name;
 	std::string equals;
 	sf::IntRect coords;
 	int i{ 0 };
-	infile.open("ASSETS\\IMAGES\\items1.txt");
+	infile.open("ASSETS\\IMAGES\\items" + std::to_string(level) + ".txt");
 	while (!infile.eof() && i < TILES_HIGH)
 	{
-		infile >> m_itemsLevel[i][0] >> m_itemsLevel[i][1] >> m_itemsLevel[i][2] >> m_itemsLevel[i][3]
-			>> m_itemsLevel[i][4] >> m_itemsLevel[i][5] >> m_itemsLevel[i][6] >> m_itemsLevel[i][7]
-			>> m_itemsLevel[i][8] >> m_itemsLevel[i][9] >> m_itemsLevel[i][10] >> m_itemsLevel[i][11]
-			>> m_itemsLevel[i][12] >> m_itemsLevel[i][13] >> m_itemsLevel[i][14] >> m_itemsLevel[i][15];
+		infile >> s_itemsLevel[i][0] >> s_itemsLevel[i][1] >> s_itemsLevel[i][2] >> s_itemsLevel[i][3]
+			>> s_itemsLevel[i][4] >> s_itemsLevel[i][5] >> s_itemsLevel[i][6] >> s_itemsLevel[i][7]
+			>> s_itemsLevel[i][8] >> s_itemsLevel[i][9] >> s_itemsLevel[i][10] >> s_itemsLevel[i][11]
+			>> s_itemsLevel[i][12] >> s_itemsLevel[i][13] >> s_itemsLevel[i][14] >> s_itemsLevel[i][15];
 		i++;
 	}
 	infile.close();
@@ -560,11 +610,11 @@ void GamePlay::setupItemsVertexes()
 	{
 		for (int col = 0; col < TILES_WIDE; col++)
 		{
-			if (m_itemsLevel[row][col] != 0 && !(
-				m_itemsLevel[row][col] == ICE_POOL ||
-				m_itemsLevel[row][col] == BUCKET1 ||
-				m_itemsLevel[row][col] == BUCKET2 ||
-				m_itemsLevel[row][col] == BUCKET3 
+			if (s_itemsLevel[row][col] != 0 && !(
+				s_itemsLevel[row][col] == ICE_POOL ||
+				s_itemsLevel[row][col] == BUCKET1 ||
+				s_itemsLevel[row][col] == BUCKET2 ||
+				s_itemsLevel[row][col] == BUCKET3 
 				))
 			{
 				for (int i = 0; i < 6; i++)
@@ -575,20 +625,20 @@ void GamePlay::setupItemsVertexes()
 					case 0:
 					case 3:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
 						break;
 					case 1:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE } +TOP_LEFT;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE } +offset;
 						break;
 					case 2:
 					case 4:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE + TILE_SIZE,row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE + TILE_SIZE,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 						break;
 					case 5:
 						vertex.position = sf::Vector2f{ col * TILE_SIZE, row * TILE_SIZE + TILE_SIZE } +TOP_LEFT;
-						vertex.texCoords = sf::Vector2f{ (m_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(m_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
+						vertex.texCoords = sf::Vector2f{ (s_itemsLevel[row][col] % GRIDSIZE)*TILE_SIZE ,(s_itemsLevel[row][col] / GRIDSIZE)*TILE_SIZE + TILE_SIZE } +offset;
 						break;
 					}
 					m_foreground.append(vertex);

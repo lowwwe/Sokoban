@@ -24,25 +24,27 @@ const int GRIDSIZE = 5;
 class GamePlay
 {
 public:
+	static bool s_navigation[TILES_WIDE][TILES_HIGH];
+	static int s_itemsLevel[TILES_WIDE][TILES_HIGH];
 	GamePlay(sf::Font & font);
 	~GamePlay();
 	void update(sf::Time deltaTime);
 	void render(sf::RenderWindow & window);
 	void processEvents(sf::Event & event);
 private:
-	void setupLevel();
-	void loadBaseFile();
+	void setupLevel(int level);
+	void loadBaseFile(int level);
 	void setupBaseVertexes(sf::Vector2f targetOffset);
 	void setupBaseItemsVertexes(sf::Vector2f targetOffset);
-	void loadItemsFile();
+	void loadItemsFile(int level);
 	void setupItemsVertexes();
 	void addPenguinVertexes(int index);
 	void setupNavigation();
-	void setupTexture();
+	void setupTexture(int level);
 	void setupBuckets();
 	void addBucketVertexes();
 	void playerMovement();
-	void moveBucket(sf::Vector2i square, Direction direction);
+	void moveBucket(sf::Vector2i square, Direction direction, bool shove);
 	void updateBuckets(sf::Time deltaTime);
 	Direction newDirection(Direction default);
 	
@@ -57,13 +59,16 @@ private:
 	sf::VertexArray m_penguinVertexes;
 
 	int m_baseLevel[TILES_WIDE][TILES_HIGH];
-	int m_itemsLevel[TILES_WIDE][TILES_HIGH];
-	bool m_navigation[TILES_WIDE][TILES_HIGH];
+	
+	
 	sf::Time m_timer;
 	sf::Text m_clock;
 	void updateClock(sf::Time deltaTime);
 	bool m_gameOver; // used to show time when finshed
 	bool penguinMovement(sf::Time deltaTime);
+	bool m_pushing;
+	bool m_shoving;
+	int m_countDownTimer;
 
 };
 
