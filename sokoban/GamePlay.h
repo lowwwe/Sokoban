@@ -70,6 +70,7 @@ private:
 	bool m_pushing;
 	bool m_shoving;
 	int m_countDownTimer;
+	int m_currentLevel;
 
 };
 
