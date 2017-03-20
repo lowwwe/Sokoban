@@ -151,6 +151,8 @@ void GamePlay::update(sf::Time deltaTime)
 		if (m_countDownTimer-- < 0)
 		{
 			Game::currentState = GameState::MainMenu;
+			setupLevel(2);
+			m_gameOver = false;
 		}
 	}
 }

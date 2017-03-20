@@ -31,8 +31,9 @@ public:
 	void update(sf::Time deltaTime);
 	void render(sf::RenderWindow & window);
 	void processEvents(sf::Event & event);
-private:
 	void setupLevel(int level);
+private:
+	
 	void loadBaseFile(int level);
 	void setupBaseVertexes(sf::Vector2f targetOffset);
 	void setupBaseItemsVertexes(sf::Vector2f targetOffset);
