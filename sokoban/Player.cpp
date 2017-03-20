@@ -3,7 +3,7 @@
 
 
 Player::Player() :
-	m_playerNo{ 3 },
+	m_playerNo{ 0 },
 	m_vertexes{ sf::Triangles, 6 },
 	m_footSteps{ sf::Triangles,MAX_FOOT_STEPS_6 },
 	m_animationFrame{ 1 },
@@ -14,7 +14,7 @@ Player::Player() :
 	m_stepstaken{ 0 },
 	m_square{ 5,5 },
 	m_leftFoot{ false },
-	m_female{true},
+	m_female{false},
 	m_ready{ true }
 {
 	sf::FloatRect textureCoOrds = TextureManager::getRect("characters");

@@ -226,4 +226,16 @@ void Penguin::fadeFootSteps()
 	}
 }
 
+void Penguin::reset()
+{
+	m_alive = true;
+	m_drowning = false;
+	m_animationFrame = 1;
+	m_facing = Direction::Down;
+	m_stepstaken = 0;		
+	m_leftFoot = false;
+	m_drownStep = 0;		
+	m_ready= true;
+}
+
 

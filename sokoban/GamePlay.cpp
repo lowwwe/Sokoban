@@ -20,14 +20,15 @@ GamePlay::GamePlay(sf::Font & font) :
 	m_gameOver{ false },
 	m_pushing{ false },
 	m_shoving{ false },
-	m_countDownTimer{ 0 }
+	m_countDownTimer{ 0 },
+	m_currentLevel{ 1 }
 {
 	m_textureCoOrds = TextureManager::getRect("tiles");
 	m_clock.setFont(m_font);
 	m_clock.setCharacterSize(20);
 	m_clock.setColor(sf::Color::White);
 	m_clock.setPosition(sf::Vector2f{ 500.0f,550.0f });
-	setupLevel(1);
+	setupLevel(m_currentLevel);
 }
 
 
@@ -151,6 +152,8 @@ void GamePlay::update(sf::Time deltaTime)
 		if (m_countDownTimer-- < 0)
 		{
 			Game::currentState = GameState::MainMenu;
+			setupLevel(m_currentLevel++);
+			m_gameOver = false;
 		}
 	}
 }
@@ -340,6 +343,7 @@ void GamePlay::setupLevel(int level)
 		{
 			m_penguins[i].m_square.x = std::rand() % 16;
 			m_penguins[i].m_square.y = std::rand() % 16;
+			m_penguins[i].reset();			
 		}
 		m_penguins[i].position();
 	}

@@ -28,6 +28,7 @@ public:
 	void position(); // set the sprite position for the current square (top left corner of square)
 	void drown(); // start the penguim falling through ice sequence
 	void fadeFootSteps(); // reduce the alpha of footspet particles
+	void reset(); //reset the penguin after each level
 private:
 	bool m_drowning;  // when true penguin falls into ice and dies
 	sf::Vector2f m_position; // position of top left of sprite
