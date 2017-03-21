@@ -55,6 +55,7 @@
     <Text Include="assets\images\items2.txt" />
     <Text Include="assets\images\level1.txt" />
     <Text Include="assets\images\level2.txt" />
+    <Text Include="assets\images\level3.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{dea870b2-8c3f-42bf-8dba-6146db9321e5}</ProjectGuid>
