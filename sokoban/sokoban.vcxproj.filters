@@ -118,5 +118,8 @@
     <Text Include="assets\images\level2.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="assets\images\highscores.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\images\atlas.txt" />
+    <Text Include="assets\images\highscores.txt" />
     <Text Include="assets\images\items1.txt" />
     <Text Include="assets\images\items2.txt" />
     <Text Include="assets\images\level1.txt" />

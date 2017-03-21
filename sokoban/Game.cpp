@@ -110,6 +110,9 @@ void Game::processEvents()
 		case GameState::Credits:
 
 			break;
+		case GameState::HighScore:
+			m_highScore.processEvents(event);
+			break;
 		case GameState::Exit:
 			m_window.close();
 			break;
@@ -141,6 +144,9 @@ void Game::update(sf::Time deltaTime)
 		m_gamePlay.update(deltaTime);
 		break;
 	case GameState::Credits:
+		break;
+	case GameState::HighScore:
+		m_highScore.update(deltaTime);
 		break;
 	case GameState::Exit:
 
@@ -174,6 +180,9 @@ void Game::render()
 		break;
 	case GameState::Game:
 		m_gamePlay.render(m_window);
+		break;
+	case GameState::HighScore:
+		m_highScore.render(m_window);
 		break;
 	case GameState::Credits:
 		m_window.clear(sf::Color::Red);

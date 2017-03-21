@@ -20,6 +20,8 @@ public:
 	void update(sf::Time deltaTime);
 	void render(sf::RenderWindow & window);
 	void processEvents(sf::Event & event);
+	void loadScores();
+	void saveScores();
 
 	static sf::Time  s_newHighScore;
 	bool m_showOnly;

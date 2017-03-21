@@ -35,7 +35,7 @@ void Help::render(sf::RenderWindow & window)
 void Help::processEvents(sf::Event & event)
 {
 	if (sf::Event::KeyPressed == event.type)
-		if(	sf::Keyboard::Key::BackSpace == event.key.code)
+		if(	sf::Keyboard::Key::Escape == event.key.code)
 	{
 		Game::currentState = GameState::MainMenu;
 	}
