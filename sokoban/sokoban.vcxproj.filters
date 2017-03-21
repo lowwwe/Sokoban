@@ -121,8 +121,5 @@
     <Text Include="assets\images\highscores.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="assets\images\level3.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
   </ItemGroup>
 </Project>
