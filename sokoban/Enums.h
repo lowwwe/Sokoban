@@ -28,7 +28,8 @@ enum class
 	Help,
 	Game,
 	Exit,
-	Credits
+	Credits,
+	HighScore
 };
 
 

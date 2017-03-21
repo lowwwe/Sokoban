@@ -4,7 +4,7 @@
 #include <SFML\Graphics.hpp>
 
 
-#define MAXBUTTONS 4
+#define MAXBUTTONS 5
 class MainMenu
 {
 public:

@@ -8,6 +8,7 @@
 #include "MainMenu.h"
 #include "Enums.h"
 #include "Help.h"
+#include "HighScore.h"
 
 
 class Game
@@ -33,6 +34,7 @@ private:
 	MainMenu m_mainMenu;
 	GamePlay m_gamePlay;
 	Help m_help;
+	HighScore m_highScore;
 
 
 	sf::Text updateFps;

@@ -31,12 +31,14 @@ void MainMenu::update(sf::Time deltaTime)
 			Game::currentState = GameState::Help;
 			break;
 		case 2:
-			Game::currentState = GameState::Credits;
+			Game::currentState = GameState::HighScore;
 			break;
 		case 3:
+			Game::currentState = GameState::Credits;
+			break;
+		case 4:
 			Game::currentState = GameState::Exit;
 			break;
-
 		default:
 			break;
 		}
@@ -48,7 +50,7 @@ void MainMenu::render(sf::RenderWindow & window)
 {
 	window.clear(sf::Color{10,30,136,255});
 	window.draw(m_buttons, &TextureManager::texture);
-	for (size_t i = 0; i < 4; i++)
+	for (size_t i = 0; i < MAXBUTTONS; i++)
 	{
 		window.draw(m_texts[i]);
 	}	
@@ -100,11 +102,14 @@ void MainMenu::setupButtons()
 	createButton(m_texts[1], "Help");
 	addButton(m_texts[1], sf::Vector2f(300, 200), coOrds);
 
-	createButton(m_texts[2], "Credits\nLegal");
+	createButton(m_texts[2], "High Scores");
 	addButton(m_texts[2], sf::Vector2f(300, 300), coOrds);
 
-	createButton(m_texts[3], "Exit");
+	createButton(m_texts[3], "Credits");
 	addButton(m_texts[3], sf::Vector2f(300, 400), coOrds);
+
+	createButton(m_texts[4], "Exit");
+	addButton(m_texts[4], sf::Vector2f(300, 500), coOrds);
 	
 }
 

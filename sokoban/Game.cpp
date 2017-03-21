@@ -15,7 +15,8 @@ Game::Game(sf::Font & font) :
 	m_splash(font),
 	m_mainMenu(font),
 	m_gamePlay(font),
-	m_help(font)
+	m_help(font),
+	m_highScore(font)
 {
 	m_status.setFont(font);
 	m_status.setCharacterSize(24);
