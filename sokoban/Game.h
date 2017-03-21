@@ -7,6 +7,7 @@
 #include "GamePlay.h"
 #include "MainMenu.h"
 #include "Enums.h"
+#include "Help.h"
 
 
 class Game
@@ -31,6 +32,8 @@ private:
 	Splash m_splash;
 	MainMenu m_mainMenu;
 	GamePlay m_gamePlay;
+	Help m_help;
+
 
 	sf::Text updateFps;
 	sf::Text drawFps;

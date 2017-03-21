@@ -22,6 +22,7 @@
     <ClCompile Include="Bucket.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePlay.cpp" />
+    <ClCompile Include="Help.cpp" />
     <ClCompile Include="Licence.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GamePlay.h" />
+    <ClInclude Include="Help.h" />
     <ClInclude Include="Licence.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MainMenu.h" />

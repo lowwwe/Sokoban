@@ -14,7 +14,8 @@ Game::Game(sf::Font & font) :
 	m_licence(font),
 	m_splash(font),
 	m_mainMenu(font),
-	m_gamePlay(font)
+	m_gamePlay(font),
+	m_help(font)
 {
 	m_status.setFont(font);
 	m_status.setCharacterSize(24);
@@ -100,7 +101,7 @@ void Game::processEvents()
 			m_mainMenu.processEvents(event);
 			break;
 		case GameState::Help:
-		
+			m_help.processEvents(event);
 			break;
 		case GameState::Game:
 			m_gamePlay.processEvents(event);
@@ -133,6 +134,7 @@ void Game::update(sf::Time deltaTime)
 		m_mainMenu.update(deltaTime);
 		break;
 	case GameState::Help:
+		m_help.update(deltaTime);
 		break;
 	case GameState::Game:
 		m_gamePlay.update(deltaTime);
@@ -167,10 +169,7 @@ void Game::render()
 		m_mainMenu.render(m_window);
 		break;
 	case GameState::Help:
-		m_window.clear(sf::Color::Red);
-		m_status.setString("Game State Help");
-		m_window.draw(m_status);
-		
+		m_help.render(m_window);		
 		break;
 	case GameState::Game:
 		m_gamePlay.render(m_window);
