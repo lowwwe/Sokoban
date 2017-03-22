@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include "Game.h"
+#include "HighScore.h"
 
 
 
@@ -151,7 +152,8 @@ void GamePlay::update(sf::Time deltaTime)
 	{
 		if (m_countDownTimer-- < 0)
 		{
-			Game::currentState = GameState::MainMenu;
+			Game::currentState = GameState::HighScore;
+			HighScore::s_newHighScore = m_timer;
 			setupLevel(m_currentLevel++);
 			m_gameOver = false;
 		}
