@@ -16,7 +16,8 @@ Game::Game(sf::Font & font) :
 	m_mainMenu(font),
 	m_gamePlay(font),
 	m_help(font),
-	m_highScore(font)
+	m_highScore(font),	
+	m_credits(font)
 {
 	m_status.setFont(font);
 	m_status.setCharacterSize(24);
@@ -108,7 +109,7 @@ void Game::processEvents()
 			m_gamePlay.processEvents(event);
 			break;
 		case GameState::Credits:
-
+			m_credits.processEvents(event);
 			break;
 		case GameState::HighScore:
 			m_highScore.processEvents(event);
@@ -144,6 +145,7 @@ void Game::update(sf::Time deltaTime)
 		m_gamePlay.update(deltaTime);
 		break;
 	case GameState::Credits:
+		m_credits.update(deltaTime);
 		break;
 	case GameState::HighScore:
 		m_highScore.update(deltaTime);
@@ -185,10 +187,7 @@ void Game::render()
 		m_highScore.render(m_window);
 		break;
 	case GameState::Credits:
-		m_window.clear(sf::Color::Red);
-		m_status.setString("Game State Credits");
-		m_window.draw(m_status);
-		
+		m_credits.render(m_window);		
 		break;
 	case GameState::Exit:
 		m_window.clear(sf::Color::Red);

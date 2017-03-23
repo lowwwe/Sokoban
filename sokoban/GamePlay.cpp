@@ -500,7 +500,7 @@ void GamePlay::loadBaseFile(int level)
 	std::string equals;
 	sf::IntRect coords;
 	int i{ 0 };
-	infile.open("ASSETS\\IMAGES\\level" + std::to_string(level) + ".txt");
+	infile.open("ASSETS\\DATA\\level" + std::to_string(level) + ".txt");
 	while (!infile.eof() && i < TILES_HIGH)
 	{
 		infile >> m_baseLevel[i][0] >> m_baseLevel[i][1] >> m_baseLevel[i][2] >> m_baseLevel[i][3]
@@ -596,7 +596,7 @@ void GamePlay::loadItemsFile(int level)
 	std::string equals;
 	sf::IntRect coords;
 	int i{ 0 };
-	infile.open("ASSETS\\IMAGES\\items" + std::to_string(level) + ".txt");
+	infile.open("ASSETS\\DATA\\items" + std::to_string(level) + ".txt");
 	while (!infile.eof() && i < TILES_HIGH)
 	{
 		infile >> s_itemsLevel[i][0] >> s_itemsLevel[i][1] >> s_itemsLevel[i][2] >> s_itemsLevel[i][3]

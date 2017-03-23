@@ -9,6 +9,7 @@
 #include "Enums.h"
 #include "Help.h"
 #include "HighScore.h"
+#include "Credits.h"
 
 
 class Game
@@ -35,6 +36,7 @@ private:
 	GamePlay m_gamePlay;
 	Help m_help;
 	HighScore m_highScore;
+	Credits m_credits;
 
 
 	sf::Text updateFps;

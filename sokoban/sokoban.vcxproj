@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArtistText.cpp" />
     <ClCompile Include="Bucket.cpp" />
+    <ClCompile Include="Credits.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePlay.cpp" />
     <ClCompile Include="Help.cpp" />
@@ -33,8 +35,10 @@
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArtistText.h" />
     <ClInclude Include="Bucket.h" />
     <ClInclude Include="Colours.h" />
+    <ClInclude Include="Credits.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GamePlay.h" />

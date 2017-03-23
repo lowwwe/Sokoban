@@ -40,7 +40,7 @@ HighScore::HighScore(sf::Font & font):
 		m_scoresText[i].setFont(font);
 		m_scoresText[i].setCharacterSize(24);
 		m_scoresText[i].setColor(sf::Color::Blue);
-		m_scoresText[i].setPosition(100.0f, 100.0f + i* 50.0f);
+		m_scoresText[i].setPosition(150.0f, 40.0f + i* 40.0f);
 	}
 }
 
@@ -146,7 +146,7 @@ void HighScore::loadScores()
 	int i{ 0 };
 	double hundreds{ 0 };
 	std::string time;
-	infile.open("ASSETS\\IMAGES\\highscores.txt");
+	infile.open("ASSETS\\DATA\\highscores.txt");
 	if (infile.is_open())
 	{
 		while (!infile.eof() && i < MAX_SCORES)
@@ -164,7 +164,7 @@ void HighScore::saveScores()
 {
 	std::ofstream outfile;
 	std::string line;
-	outfile.open("ASSETS\\IMAGES\\highscores.txt", std::ofstream::trunc);
+	outfile.open("ASSETS\\DATA\\highscores.txt", std::ofstream::trunc);
 	if (outfile.is_open())
 	{
 		for (int i = 0; i < MAX_SCORES; i++)
