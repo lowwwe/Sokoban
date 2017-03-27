@@ -52,7 +52,7 @@ bool Credits::readNextLine(int index, int maxOffset)
 	{
 		m_blankLine = true;
 	}
-	m_creditLines[index].setPosition(100, maxOffset);
+	m_creditLines[index].setPosition(100.0f, static_cast<float>( maxOffset));
 	m_creditLines[index].setString(fileLine);
 	m_creditLines[index].m_active = true;
 	if (m_artistsFile.eof())
@@ -71,7 +71,7 @@ Credits::~Credits()
 void Credits::update(sf::Time deltaTime)
 {
 	sf::Vector2f position{};
-	int maxDisplacement{ 0 };
+	float maxDisplacement{ 0.0f };
 	m_cumulativeTime += deltaTime;
 	bool allFinished = true;	
 	for (int i = 0; i < MAX_LINES; i++)
@@ -96,7 +96,7 @@ void Credits::update(sf::Time deltaTime)
 						maxDisplacement = m_creditLines[j].getPosition().y;
 					}
 				}
-				readNextLine(i, maxDisplacement + 30);
+				readNextLine(i, maxDisplacement + 30.0f);
 			}
 
 		}
