@@ -10,8 +10,9 @@ const int MAX_SCORES { 10};
 class HighScore
 {
 	const sf::Vector2f INPUT_OFFSET{ 160.0f, 450.0f };
+	const sf::Vector2f INPUT_BOX_SIZE{ 300.0f, 50.0f };
 	const int MAX_LETTERS{ 12 };
-
+	const unsigned FONT_SIZE{ 24 };
 	sf::Font m_font; // font used
 	sf::Text m_scoresText[MAX_SCORES]; //
 	double m_scoreValue[MAX_SCORES];
@@ -24,6 +25,7 @@ class HighScore
 	int m_iBarCount;
 	bool m_showIBar;
 	std::string m_newName;
+	void updateiBar();
 public:
 	HighScore(sf::Font & font);
 	~HighScore();

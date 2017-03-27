@@ -7,6 +7,15 @@
 
 sf::Time HighScore::s_newHighScore{ sf::Time::Zero };
 
+void HighScore::updateiBar()
+{
+	sf::FloatRect textBounds = m_nameInput.getGlobalBounds();
+	m_iBar[0].position = sf::Vector2f{ textBounds.left + textBounds.width + 2.0f, textBounds.top - 1.0f };
+	m_iBar[1].position = sf::Vector2f{ textBounds.left + textBounds.width + 2.0f, textBounds.top + textBounds.height + 1.0f };
+	m_iBar[2].position = sf::Vector2f{ textBounds.left + textBounds.width + 3.0f, textBounds.top - 1.0f };
+	m_iBar[3].position = sf::Vector2f{ textBounds.left + textBounds.width + 3.0f, textBounds.top + textBounds.height + 1.0f };
+}
+
 HighScore::HighScore(sf::Font & font):
 	m_font(font),
 	m_showOnly{ true },
@@ -18,7 +27,7 @@ HighScore::HighScore(sf::Font & font):
 	m_newName{"Anon"}	
 {
 	m_promptText.setFont(font);
-	m_promptText.setCharacterSize(24);
+	m_promptText.setCharacterSize(FONT_SIZE);
 	m_promptText.setColor(sf::Color::Blue);
 	m_promptText.setString("Enter your name");
 	sf::FloatRect textSize = m_promptText.getGlobalBounds();
@@ -28,9 +37,9 @@ HighScore::HighScore(sf::Font & font):
 	m_inputBox.setOutlineColor(sf::Color::Black);
 	m_inputBox.setOutlineThickness(3.0f);
 	m_inputBox.setPosition(INPUT_OFFSET);
-	m_inputBox.setSize({ 300.0f, 50.0f });
+	m_inputBox.setSize({ INPUT_BOX_SIZE });
 	m_nameInput.setFont(font);
-	m_nameInput.setCharacterSize(24u);
+	m_nameInput.setCharacterSize(FONT_SIZE);
 	m_nameInput.setColor(sf::Color::Blue);
 	m_nameInput.setPosition(INPUT_OFFSET + sf::Vector2f{ 10.0f, 10.0f });
 	m_nameInput.setString(m_newName);
@@ -38,14 +47,11 @@ HighScore::HighScore(sf::Font & font):
 	m_iBar[1].color = sf::Color::Blue;
 	m_iBar[2].color = sf::Color::Blue;
 	m_iBar[3].color = sf::Color::Blue;
-	m_iBar[0].position = INPUT_OFFSET + sf::Vector2f{10.0f,10.0f} ;
-	m_iBar[1].position = INPUT_OFFSET + sf::Vector2f{ 10.0f,40.0f } ;
-	m_iBar[2].position = INPUT_OFFSET + sf::Vector2f{ 11.0f,10.0f };
-	m_iBar[3].position = INPUT_OFFSET + sf::Vector2f{ 11.0f,40.0f };
+	updateiBar();
 	for (int i = 0; i < MAX_SCORES; i++)
 	{
 		m_scoresText[i].setFont(font);
-		m_scoresText[i].setCharacterSize(24);
+		m_scoresText[i].setCharacterSize(FONT_SIZE);
 		m_scoresText[i].setColor(sf::Color::Blue);
 		m_scoresText[i].setPosition(150.0f, 40.0f + i* 40.0f);
 	}
@@ -133,12 +139,8 @@ void HighScore::processEvents(sf::Event & event)
 			}
 		}
 		m_nameInput.setString(m_newName);
+		updateiBar();
 		
-		sf::FloatRect textBounds = m_nameInput.getGlobalBounds();
-		m_iBar[0].position = sf::Vector2f{ textBounds.left + textBounds.width + 2.0f, textBounds.top -1.0f };
-		m_iBar[1].position = sf::Vector2f{ textBounds.left + textBounds.width + 2.0f, textBounds.top + textBounds.height + 1.0f};
-		m_iBar[2].position = sf::Vector2f{ textBounds.left + textBounds.width + 3.0f, textBounds.top -1.0f };
-		m_iBar[3].position = sf::Vector2f{ textBounds.left + textBounds.width + 3.0f, textBounds.top  + textBounds.height + 1.0f };
 	}
 	if (sf::Event::KeyPressed == event.type)
 	{
