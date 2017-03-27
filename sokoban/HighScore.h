@@ -2,7 +2,7 @@
 #define HIGH_SCORE
 
 #include <SFML\Graphics.hpp>
-const int MAX_SCORES = 10;
+const int MAX_SCORES { 10};
 
 
 
