@@ -9,7 +9,7 @@ Licence::Licence(sf::Font & font) :
 {
 	m_licenceText.setFont(font);
 	m_licenceText.setCharacterSize(24);
-	m_licenceText.setColor(sf::Color::White);
+	m_licenceText.setFillColor(sf::Color::White);
 	m_licenceText.setString("Hand Made by Pete");
 	sf::FloatRect textSize = m_licenceText.getGlobalBounds();
 	float xPosition = Game::screenWidth / 2 - textSize.width / 2;

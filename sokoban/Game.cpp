@@ -21,7 +21,7 @@ Game::Game(sf::Font & font) :
 {
 	m_status.setFont(font);
 	m_status.setCharacterSize(24);
-	m_status.setColor(sf::Color::White);
+	m_status.setFillColor(sf::Color::White);
 	m_status.setPosition(100.0f, 300.0f);
 	
 #ifdef TEST_FPS
@@ -31,11 +31,11 @@ Game::Game(sf::Font & font) :
 	updateFps.setFont(m_font);
 	updateFps.setPosition(120, 560);
 	updateFps.setCharacterSize(12);
-	updateFps.setColor(sf::Color::White);
+	updateFps.setFillColor(sf::Color::White);
 	drawFps.setFont(m_font);
 	drawFps.setPosition(20, 560);
 	drawFps.setCharacterSize(12);
-	drawFps.setColor(sf::Color::White);
+	drawFps.setFillColor(sf::Color::White);
 #endif // TEST_FPS
 }
 

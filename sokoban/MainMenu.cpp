@@ -117,7 +117,7 @@ void MainMenu::createButton(sf::Text & Text, std::string message)
 {
 	Text.setFont(m_font);
 	Text.setCharacterSize(24);
-	Text.setColor(sf::Color::Yellow);
+	Text.setFillColor(sf::Color::Yellow);
 	Text.setString(message);
 }
 

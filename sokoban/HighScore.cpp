@@ -19,7 +19,7 @@ HighScore::HighScore(sf::Font & font):
 {
 	m_promptText.setFont(font);
 	m_promptText.setCharacterSize(24);
-	m_promptText.setColor(sf::Color::Blue);
+	m_promptText.setFillColor(sf::Color::Blue);
 	m_promptText.setString("Enter your name");
 	sf::FloatRect textSize = m_promptText.getGlobalBounds();
 	float xPosition = Game::screenWidth / 2 - textSize.width / 2;
@@ -31,7 +31,7 @@ HighScore::HighScore(sf::Font & font):
 	m_inputBox.setSize({ 200.0f, 60.0f });
 	m_nameInput.setFont(font);
 	m_nameInput.setCharacterSize(24);
-	m_nameInput.setColor(sf::Color::Blue);
+	m_nameInput.setFillColor(sf::Color::Blue);
 	m_nameInput.setPosition(210.0f, 410.0f);
 
 
@@ -39,7 +39,7 @@ HighScore::HighScore(sf::Font & font):
 	{
 		m_scoresText[i].setFont(font);
 		m_scoresText[i].setCharacterSize(24);
-		m_scoresText[i].setColor(sf::Color::Blue);
+		m_scoresText[i].setFillColor(sf::Color::Blue);
 		m_scoresText[i].setPosition(150.0f, 40.0f + i* 40.0f);
 	}
 }

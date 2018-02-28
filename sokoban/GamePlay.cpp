@@ -27,7 +27,7 @@ GamePlay::GamePlay(sf::Font & font) :
 	m_textureCoOrds = TextureManager::getRect("tiles");
 	m_clock.setFont(m_font);
 	m_clock.setCharacterSize(20);
-	m_clock.setColor(sf::Color::White);
+	m_clock.setFillColor(sf::Color::White);
 	m_clock.setPosition(sf::Vector2f{ 500.0f,550.0f });
 	setupLevel(m_currentLevel);
 }

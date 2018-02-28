@@ -14,7 +14,7 @@ Splash::Splash(sf::Font & font) :
 	
 	m_promptText.setFont(font);
 	m_promptText.setCharacterSize(24);
-	m_promptText.setColor(sf::Color::Blue);
+	m_promptText.setFillColor(sf::Color::Blue);
 	m_promptText.setString("Press any Key to continue");
 	sf::FloatRect textSize = m_promptText.getGlobalBounds();
 	float xPosition = Game::screenWidth / 2 - textSize.width / 2;

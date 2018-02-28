@@ -11,7 +11,7 @@ Help::Help(sf::Font & font):
 {
 	m_helpText.setFont(font);
 	m_helpText.setCharacterSize(24);
-	m_helpText.setColor(sf::Color::White);
+	m_helpText.setFillColor(sf::Color::White);
 	m_helpText.setString("Use arrow keys to move \nLeft <shift> to push a barrel\nLeft <ALt> to shove a barrel\nGet to the exit when all the\npenguins are dead in the\nshortest time\n\n<Escape> to return to menu");
 	sf::FloatRect textSize = m_helpText.getGlobalBounds();
 	float xPosition = Game::screenWidth / 2 - textSize.width / 2;

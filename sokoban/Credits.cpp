@@ -36,7 +36,7 @@ bool Credits::readNextLine(int index, int maxOffset)
 {
 	std::string fileLine;
 	m_creditLines[index].setFont(m_comicSans);
-	m_creditLines[index].setColor(sf::Color::White);
+	m_creditLines[index].setFillColor(sf::Color::White);
 	if (m_blankLine)
 	{
 		m_creditLines[index].setCharacterSize(25);
